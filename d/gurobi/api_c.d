@@ -224,7 +224,7 @@ const GRB_CB_BARRIER_COMPL   = 7006;
 //C     #define GRB_INT_ATTR_NUMBINVARS    "NumBinVars"    /* # of binary vars */
 //C     #define GRB_INT_ATTR_NUMPWLOBJVARS "NumPWLObjVars" /* # of variables with PWL obj. */
 //C     #define GRB_STR_ATTR_MODELNAME     "ModelName"     /* model name */
-const GRB_INT_ATTR_MODELSENSE = "ModelSense";    /* 1=min, -1=max */
+const string GRB_INT_ATTR_MODELSENSE = "ModelSense";    /* 1=min, -1=max */
 //C     #define GRB_DBL_ATTR_OBJCON        "ObjCon"        /* Objective constant */
 //C     #define GRB_INT_ATTR_IS_MIP        "IsMIP"         /* Is model a MIP? */
 //C     #define GRB_INT_ATTR_IS_QP         "IsQP"          /* Model has quadratic obj? */

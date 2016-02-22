@@ -39,7 +39,7 @@ void main()
 
   /* Change objective sense to maximization */
 
-  error = GRBsetintattr(model, cast(char*)GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE);
+  error = GRBsetintattr(model, cast(char*)"ModelSense", GRB_MAXIMIZE);
   if (error) goto QUIT;
 
   /* Integrate new variables */
@@ -76,13 +76,13 @@ void main()
 
   /* Capture solution information */
 
-  error = GRBgetintattr(model, cast(char*)GRB_INT_ATTR_STATUS, &optimstatus);
+  error = GRBgetintattr(model, cast(char*)"Status", &optimstatus);
   if (error) goto QUIT;
 
-  error = GRBgetdblattr(model, cast(char*)GRB_DBL_ATTR_OBJVAL, &objval);
+  error = GRBgetdblattr(model, cast(char*)"ObjVal", &objval);
   if (error) goto QUIT;
 
-  error = GRBgetdblattrarray(model, cast(char*)GRB_DBL_ATTR_X, 0, 3, cast(double*)sol);
+  error = GRBgetdblattrarray(model, cast(char*)"X", 0, 3, cast(double*)sol);
   if (error) goto QUIT;
 
   printf("\nOptimization complete\n");
