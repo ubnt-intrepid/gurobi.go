@@ -15,7 +15,7 @@ void main()
   //model.addvars(GRB_BINARY, 3);
 
   // Change objective sense to maximization
-  model.setintattr("ModelSense", GRB_MAXIMIZE);
+  model.setintattr(GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE);
 
   // Integrate new variables
   model.update();
@@ -33,9 +33,9 @@ void main()
   model.write("mip1.lp");
 
   // Capture solution information
-  int optimstatus = model.getintattr("Status");
-  double objval   = model.getdblattr("ObjVal");
-  double[] sol    = model.getdblattrarray("X", 3);
+  int optimstatus = model.getintattr(GRB_INT_ATTR_STATUS);
+  double objval   = model.getdblattr(GRB_DBL_ATTR_OBJVAL);
+  double[] sol    = model.getdblattrarray(GRB_DBL_ATTR_X, 3);
 
   writeln();
   writeln("Optimization complete");

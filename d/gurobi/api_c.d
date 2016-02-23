@@ -18,486 +18,480 @@ alias _GRBenv   GRBenv;
 alias _GRBsvec  GRBsvec;
 
 // Version numbers
-const GRB_VERSION_MAJOR     = 6;
-const GRB_VERSION_MINOR     = 5;
-const GRB_VERSION_TECHNICAL = 0;
+enum GRB_VERSION_MAJOR     = 6;
+enum GRB_VERSION_MINOR     = 5;
+enum GRB_VERSION_TECHNICAL = 0;
 
 // Default and max priority for Compute Server jobs
-const DEFAULT_CS_PRIORITY = 0;
-const MAX_CS_PRIORITY     = 100;
+enum DEFAULT_CS_PRIORITY = 0;
+enum MAX_CS_PRIORITY     = 100;
 
 // Default port number for Compute Server
-const DEFAULT_CS_PORT = 61000;
+enum DEFAULT_CS_PORT = 61000;
 
 // Constraint senses
-const GRB_LESS_EQUAL    = '<';
-const GRB_GREATER_EQUAL = '>';
-const GRB_EQUAL         = '=';
+enum GRB_LESS_EQUAL    = '<';
+enum GRB_GREATER_EQUAL = '>';
+enum GRB_EQUAL         = '=';
 
 // Variable types
-const GRB_CONTINUOUS = 'C';
-const GRB_BINARY     = 'B';
-const GRB_INTEGER    = 'I';
-const GRB_SEMICONT   = 'S';
-const GRB_SEMIINT    = 'N';
+enum GRB_CONTINUOUS = 'C';
+enum GRB_BINARY     = 'B';
+enum GRB_INTEGER    = 'I';
+enum GRB_SEMICONT   = 'S';
+enum GRB_SEMIINT    = 'N';
 
 // Objective sense
-const GRB_MINIMIZE = 1;
-const GRB_MAXIMIZE = -1;
+enum GRB_MINIMIZE = 1;
+enum GRB_MAXIMIZE = -1;
 
 // SOS types
-const GRB_SOS_TYPE1 = 1;
-const GRB_SOS_TYPE2 = 2;
+enum GRB_SOS_TYPE1 = 1;
+enum GRB_SOS_TYPE2 = 2;
 
-// Numeric constants
-const GRB_INFINITY  = 1e100;
-const GRB_UNDEFINED = 1e101;
-const GRB_MAXINT    = 2000000000;
+// Numeric enumants
+enum GRB_INFINITY  = 1e100;
+enum GRB_UNDEFINED = 1e101;
+enum GRB_MAXINT    = 2000000000;
 
 // Limits
-const GRB_MAX_NAMELEN    = 255;
-const GRB_MAX_STRLEN     = 512;
-const GRB_MAX_CONCURRENT = 64;
+enum GRB_MAX_NAMELEN    = 255;
+enum GRB_MAX_STRLEN     = 512;
+enum GRB_MAX_CONCURRENT = 64;
 
-const GRB_FEASRELAX_LINEAR      = 0;
-const GRB_FEASRELAX_QUADRATIC   = 1;
-const GRB_FEASRELAX_CARDINALITY = 2;
+enum GRB_FEASRELAX_LINEAR      = 0;
+enum GRB_FEASRELAX_QUADRATIC   = 1;
+enum GRB_FEASRELAX_CARDINALITY = 2;
 
 // Model status codes (after call to GRBoptimize())
-const GRB_LOADED          = 1;
-const GRB_OPTIMAL         = 2;
-const GRB_INFEASIBLE      = 3;
-const GRB_INF_OR_UNBD     = 4;
-const GRB_UNBOUNDED       = 5;
-const GRB_CUTOFF          = 6;
-const GRB_ITERATION_LIMIT = 7;
-const GRB_NODE_LIMIT      = 8;
-const GRB_TIME_LIMIT      = 9;
-const GRB_SOLUTION_LIMIT  = 10;
-const GRB_INTERRUPTED     = 11;
-const GRB_NUMERIC         = 12;
-const GRB_SUBOPTIMAL      = 13;
-const GRB_INPROGRESS      = 14;
+enum GRB_LOADED          = 1;
+enum GRB_OPTIMAL         = 2;
+enum GRB_INFEASIBLE      = 3;
+enum GRB_INF_OR_UNBD     = 4;
+enum GRB_UNBOUNDED       = 5;
+enum GRB_CUTOFF          = 6;
+enum GRB_ITERATION_LIMIT = 7;
+enum GRB_NODE_LIMIT      = 8;
+enum GRB_TIME_LIMIT      = 9;
+enum GRB_SOLUTION_LIMIT  = 10;
+enum GRB_INTERRUPTED     = 11;
+enum GRB_NUMERIC         = 12;
+enum GRB_SUBOPTIMAL      = 13;
+enum GRB_INPROGRESS      = 14;
 
 // Basis status info
-const GRB_BASIC = 0;
-const GRB_NONBASIC_LOWER = -1;
-const GRB_NONBASIC_UPPER = -2;
-const GRB_SUPERBASIC = -3;
+enum GRB_BASIC          = 0;
+enum GRB_NONBASIC_LOWER = -1;
+enum GRB_NONBASIC_UPPER = -2;
+enum GRB_SUPERBASIC     = -3;
 
 // All *CUTS parameters
-const GRB_CUTS_AUTO           = -1;
-const GRB_CUTS_OFF            = 0;
-const GRB_CUTS_CONSERVATIVE   = 1;
-const GRB_CUTS_AGGRESSIVE     = 2;
-const GRB_CUTS_VERYAGGRESSIVE = 3;
+enum GRB_CUTS_AUTO           = -1;
+enum GRB_CUTS_OFF            = 0;
+enum GRB_CUTS_CONSERVATIVE   = 1;
+enum GRB_CUTS_AGGRESSIVE     = 2;
+enum GRB_CUTS_VERYAGGRESSIVE = 3;
 
-const GRB_PRESOLVE_AUTO         = -1;
-const GRB_PRESOLVE_OFF          = 0;
-const GRB_PRESOLVE_CONSERVATIVE = 1;
-const GRB_PRESOLVE_AGGRESSIVE   = 2;
+enum GRB_PRESOLVE_AUTO         = -1;
+enum GRB_PRESOLVE_OFF          = 0;
+enum GRB_PRESOLVE_CONSERVATIVE = 1;
+enum GRB_PRESOLVE_AGGRESSIVE   = 2;
 
-const GRB_METHOD_AUTO                     = -1;
-const GRB_METHOD_PRIMAL                   = 0;
-const GRB_METHOD_DUAL                     = 1;
-const GRB_METHOD_BARRIER                  = 2;
-const GRB_METHOD_CONCURRENT               = 3;
-const GRB_METHOD_DETERMINISTIC_CONCURRENT = 4;
+enum GRB_METHOD_AUTO                     = -1;
+enum GRB_METHOD_PRIMAL                   = 0;
+enum GRB_METHOD_DUAL                     = 1;
+enum GRB_METHOD_BARRIER                  = 2;
+enum GRB_METHOD_CONCURRENT               = 3;
+enum GRB_METHOD_DETERMINISTIC_CONCURRENT = 4;
 
-const GRB_BARHOMOGENEOUS_AUTO = -1;
-const GRB_BARHOMOGENEOUS_OFF  = 0;
-const GRB_BARHOMOGENEOUS_ON   = 1;
+enum GRB_BARHOMOGENEOUS_AUTO = -1;
+enum GRB_BARHOMOGENEOUS_OFF  = 0;
+enum GRB_BARHOMOGENEOUS_ON   = 1;
 
-const GRB_MIPFOCUS_BALANCED    = 0;
-const GRB_MIPFOCUS_FEASIBILITY = 1;
-const GRB_MIPFOCUS_OPTIMALITY  = 2;
-const GRB_MIPFOCUS_BESTBOUND   = 3;
+enum GRB_MIPFOCUS_BALANCED    = 0;
+enum GRB_MIPFOCUS_FEASIBILITY = 1;
+enum GRB_MIPFOCUS_OPTIMALITY  = 2;
+enum GRB_MIPFOCUS_BESTBOUND   = 3;
 
-const GRB_BARORDER_AUTOMATIC        = -1;
-const GRB_BARORDER_AMD              = 0;
-const GRB_BARORDER_NESTEDDISSECTION = 1;
+enum GRB_BARORDER_AUTOMATIC        = -1;
+enum GRB_BARORDER_AMD              = 0;
+enum GRB_BARORDER_NESTEDDISSECTION = 1;
 
-const GRB_SIMPLEXPRICING_AUTO           = -1;
-const GRB_SIMPLEXPRICING_PARTIAL        = 0;
-const GRB_SIMPLEXPRICING_STEEPEST_EDGE  = 1;
-const GRB_SIMPLEXPRICING_DEVEX          = 2;
-const GRB_SIMPLEXPRICING_STEEPEST_QUICK = 3;
+enum GRB_SIMPLEXPRICING_AUTO           = -1;
+enum GRB_SIMPLEXPRICING_PARTIAL        = 0;
+enum GRB_SIMPLEXPRICING_STEEPEST_EDGE  = 1;
+enum GRB_SIMPLEXPRICING_DEVEX          = 2;
+enum GRB_SIMPLEXPRICING_STEEPEST_QUICK = 3;
 
-const GRB_VARBRANCH_AUTO           = -1;
-const GRB_VARBRANCH_PSEUDO_REDUCED = 0;
-const GRB_VARBRANCH_PSEUDO_SHADOW  = 1;
-const GRB_VARBRANCH_MAX_INFEAS     = 2;
-const GRB_VARBRANCH_STRONG         = 3;
+enum GRB_VARBRANCH_AUTO           = -1;
+enum GRB_VARBRANCH_PSEUDO_REDUCED = 0;
+enum GRB_VARBRANCH_PSEUDO_SHADOW  = 1;
+enum GRB_VARBRANCH_MAX_INFEAS     = 2;
+enum GRB_VARBRANCH_STRONG         = 3;
 
 // Error codes
-const GRB_ERROR_OUT_OF_MEMORY            = 10001;
-const GRB_ERROR_NULL_ARGUMENT            = 10002;
-const GRB_ERROR_INVALID_ARGUMENT         = 10003;
-const GRB_ERROR_UNKNOWN_ATTRIBUTE        = 10004;
-const GRB_ERROR_DATA_NOT_AVAILABLE       = 10005;
-const GRB_ERROR_INDEX_OUT_OF_RANGE       = 10006;
-const GRB_ERROR_UNKNOWN_PARAMETER        = 10007;
-const GRB_ERROR_VALUE_OUT_OF_RANGE       = 10008;
-const GRB_ERROR_NO_LICENSE               = 10009;
-const GRB_ERROR_SIZE_LIMIT_EXCEEDED      = 10010;
-const GRB_ERROR_CALLBACK                 = 10011;
-const GRB_ERROR_FILE_READ                = 10012;
-const GRB_ERROR_FILE_WRITE               = 10013;
-const GRB_ERROR_NUMERIC                  = 10014;
-const GRB_ERROR_IIS_NOT_INFEASIBLE       = 10015;
-const GRB_ERROR_NOT_FOR_MIP              = 10016;
-const GRB_ERROR_OPTIMIZATION_IN_PROGRESS = 10017;
-const GRB_ERROR_DUPLICATES               = 10018;
-const GRB_ERROR_NODEFILE                 = 10019;
-const GRB_ERROR_Q_NOT_PSD                = 10020;
-const GRB_ERROR_QCP_EQUALITY_CONSTRAINT  = 10021;
-const GRB_ERROR_NETWORK                  = 10022;
-const GRB_ERROR_JOB_REJECTED             = 10023;
-const GRB_ERROR_NOT_SUPPORTED            = 10024;
-const GRB_ERROR_EXCEED_2B_NONZEROS       = 10025;
-const GRB_ERROR_INVALID_PIECEWISE_OBJ    = 10026;
-const GRB_ERROR_UPDATEMODE_CHANGE        = 10027;
+enum GRB_ERROR_OUT_OF_MEMORY            = 10001;
+enum GRB_ERROR_NULL_ARGUMENT            = 10002;
+enum GRB_ERROR_INVALID_ARGUMENT         = 10003;
+enum GRB_ERROR_UNKNOWN_ATTRIBUTE        = 10004;
+enum GRB_ERROR_DATA_NOT_AVAILABLE       = 10005;
+enum GRB_ERROR_INDEX_OUT_OF_RANGE       = 10006;
+enum GRB_ERROR_UNKNOWN_PARAMETER        = 10007;
+enum GRB_ERROR_VALUE_OUT_OF_RANGE       = 10008;
+enum GRB_ERROR_NO_LICENSE               = 10009;
+enum GRB_ERROR_SIZE_LIMIT_EXCEEDED      = 10010;
+enum GRB_ERROR_CALLBACK                 = 10011;
+enum GRB_ERROR_FILE_READ                = 10012;
+enum GRB_ERROR_FILE_WRITE               = 10013;
+enum GRB_ERROR_NUMERIC                  = 10014;
+enum GRB_ERROR_IIS_NOT_INFEASIBLE       = 10015;
+enum GRB_ERROR_NOT_FOR_MIP              = 10016;
+enum GRB_ERROR_OPTIMIZATION_IN_PROGRESS = 10017;
+enum GRB_ERROR_DUPLICATES               = 10018;
+enum GRB_ERROR_NODEFILE                 = 10019;
+enum GRB_ERROR_Q_NOT_PSD                = 10020;
+enum GRB_ERROR_QCP_EQUALITY_CONSTRAINT  = 10021;
+enum GRB_ERROR_NETWORK                  = 10022;
+enum GRB_ERROR_JOB_REJECTED             = 10023;
+enum GRB_ERROR_NOT_SUPPORTED            = 10024;
+enum GRB_ERROR_EXCEED_2B_NONZEROS       = 10025;
+enum GRB_ERROR_INVALID_PIECEWISE_OBJ    = 10026;
+enum GRB_ERROR_UPDATEMODE_CHANGE        = 10027;
 
 // For callback
-const GRB_CB_POLLING  = 0;
-const GRB_CB_PRESOLVE = 1;
-const GRB_CB_SIMPLEX  = 2;
-const GRB_CB_MIP      = 3;
-const GRB_CB_MIPSOL   = 4;
-const GRB_CB_MIPNODE  = 5;
-const GRB_CB_MESSAGE  = 6;
-const GRB_CB_BARRIER  = 7;
+enum GRB_CB_POLLING  = 0;
+enum GRB_CB_PRESOLVE = 1;
+enum GRB_CB_SIMPLEX  = 2;
+enum GRB_CB_MIP      = 3;
+enum GRB_CB_MIPSOL   = 4;
+enum GRB_CB_MIPNODE  = 5;
+enum GRB_CB_MESSAGE  = 6;
+enum GRB_CB_BARRIER  = 7;
 
 // Supported names for callback
-const GRB_CB_PRE_COLDEL      = 1000;
-const GRB_CB_PRE_ROWDEL      = 1001;
-const GRB_CB_PRE_SENCHG      = 1002;
-const GRB_CB_PRE_BNDCHG      = 1003;
-const GRB_CB_PRE_COECHG      = 1004;
-const GRB_CB_SPX_ITRCNT      = 2000;
-const GRB_CB_SPX_OBJVAL      = 2001;
-const GRB_CB_SPX_PRIMINF     = 2002;
-const GRB_CB_SPX_DUALINF     = 2003;
-const GRB_CB_SPX_ISPERT      = 2004;
-const GRB_CB_MIP_OBJBST      = 3000;
-const GRB_CB_MIP_OBJBND      = 3001;
-const GRB_CB_MIP_NODCNT      = 3002;
-const GRB_CB_MIP_SOLCNT      = 3003;
-const GRB_CB_MIP_CUTCNT      = 3004;
-const GRB_CB_MIP_NODLFT      = 3005;
-const GRB_CB_MIP_ITRCNT      = 3006;
-const GRB_CB_MIP_OBJBNDC     = 3007;
-const GRB_CB_MIPSOL_SOL      = 4001;
-const GRB_CB_MIPSOL_OBJ      = 4002;
-const GRB_CB_MIPSOL_OBJBST   = 4003;
-const GRB_CB_MIPSOL_OBJBND   = 4004;
-const GRB_CB_MIPSOL_NODCNT   = 4005;
-const GRB_CB_MIPSOL_SOLCNT   = 4006;
-const GRB_CB_MIPSOL_OBJBNDC  = 4007;
-const GRB_CB_MIPNODE_STATUS  = 5001;
-const GRB_CB_MIPNODE_REL     = 5002;
-const GRB_CB_MIPNODE_OBJBST  = 5003;
-const GRB_CB_MIPNODE_OBJBND  = 5004;
-const GRB_CB_MIPNODE_NODCNT  = 5005;
-const GRB_CB_MIPNODE_SOLCNT  = 5006;
-const GRB_CB_MIPNODE_BRVAR   = 5007;
-const GRB_CB_MIPNODE_OBJBNDC = 5008;
-const GRB_CB_MSG_STRING      = 6001;
-const GRB_CB_RUNTIME         = 6002;
-const GRB_CB_BARRIER_ITRCNT  = 7001;
-const GRB_CB_BARRIER_PRIMOBJ = 7002;
-const GRB_CB_BARRIER_DUALOBJ = 7003;
-const GRB_CB_BARRIER_PRIMINF = 7004;
-const GRB_CB_BARRIER_DUALINF = 7005;
-const GRB_CB_BARRIER_COMPL   = 7006;
+enum GRB_CB_PRE_COLDEL      = 1000;
+enum GRB_CB_PRE_ROWDEL      = 1001;
+enum GRB_CB_PRE_SENCHG      = 1002;
+enum GRB_CB_PRE_BNDCHG      = 1003;
+enum GRB_CB_PRE_COECHG      = 1004;
+enum GRB_CB_SPX_ITRCNT      = 2000;
+enum GRB_CB_SPX_OBJVAL      = 2001;
+enum GRB_CB_SPX_PRIMINF     = 2002;
+enum GRB_CB_SPX_DUALINF     = 2003;
+enum GRB_CB_SPX_ISPERT      = 2004;
+enum GRB_CB_MIP_OBJBST      = 3000;
+enum GRB_CB_MIP_OBJBND      = 3001;
+enum GRB_CB_MIP_NODCNT      = 3002;
+enum GRB_CB_MIP_SOLCNT      = 3003;
+enum GRB_CB_MIP_CUTCNT      = 3004;
+enum GRB_CB_MIP_NODLFT      = 3005;
+enum GRB_CB_MIP_ITRCNT      = 3006;
+enum GRB_CB_MIP_OBJBNDC     = 3007;
+enum GRB_CB_MIPSOL_SOL      = 4001;
+enum GRB_CB_MIPSOL_OBJ      = 4002;
+enum GRB_CB_MIPSOL_OBJBST   = 4003;
+enum GRB_CB_MIPSOL_OBJBND   = 4004;
+enum GRB_CB_MIPSOL_NODCNT   = 4005;
+enum GRB_CB_MIPSOL_SOLCNT   = 4006;
+enum GRB_CB_MIPSOL_OBJBNDC  = 4007;
+enum GRB_CB_MIPNODE_STATUS  = 5001;
+enum GRB_CB_MIPNODE_REL     = 5002;
+enum GRB_CB_MIPNODE_OBJBST  = 5003;
+enum GRB_CB_MIPNODE_OBJBND  = 5004;
+enum GRB_CB_MIPNODE_NODCNT  = 5005;
+enum GRB_CB_MIPNODE_SOLCNT  = 5006;
+enum GRB_CB_MIPNODE_BRVAR   = 5007;
+enum GRB_CB_MIPNODE_OBJBNDC = 5008;
+enum GRB_CB_MSG_STRING      = 6001;
+enum GRB_CB_RUNTIME         = 6002;
+enum GRB_CB_BARRIER_ITRCNT  = 7001;
+enum GRB_CB_BARRIER_PRIMOBJ = 7002;
+enum GRB_CB_BARRIER_DUALOBJ = 7003;
+enum GRB_CB_BARRIER_PRIMINF = 7004;
+enum GRB_CB_BARRIER_DUALINF = 7005;
+enum GRB_CB_BARRIER_COMPL   = 7006;
 
-/* Model attributes */
-//C     #define GRB_INT_ATTR_NUMCONSTRS    "NumConstrs"    /* # of constraints */
-//C     #define GRB_INT_ATTR_NUMVARS       "NumVars"       /* # of vars */
-//C     #define GRB_INT_ATTR_NUMSOS        "NumSOS"        /* # of sos constraints */
-//C     #define GRB_INT_ATTR_NUMQCONSTRS   "NumQConstrs"   /* # of quadratic constraints */
-//C     #define GRB_INT_ATTR_NUMNZS        "NumNZs"        /* # of nz in A */
-//C     #define GRB_DBL_ATTR_DNUMNZS       "DNumNZs"       /* # of nz in A */
-//C     #define GRB_INT_ATTR_NUMQNZS       "NumQNZs"       /* # of nz in Q */
-//C     #define GRB_INT_ATTR_NUMQCNZS      "NumQCNZs"      /* # of nz in q constraints */
-//C     #define GRB_INT_ATTR_NUMINTVARS    "NumIntVars"    /* # of integer vars */
-//C     #define GRB_INT_ATTR_NUMBINVARS    "NumBinVars"    /* # of binary vars */
-//C     #define GRB_INT_ATTR_NUMPWLOBJVARS "NumPWLObjVars" /* # of variables with PWL obj. */
-//C     #define GRB_STR_ATTR_MODELNAME     "ModelName"     /* model name */
-const string GRB_INT_ATTR_MODELSENSE = "ModelSense";    /* 1=min, -1=max */
-//C     #define GRB_DBL_ATTR_OBJCON        "ObjCon"        /* Objective constant */
-//C     #define GRB_INT_ATTR_IS_MIP        "IsMIP"         /* Is model a MIP? */
-//C     #define GRB_INT_ATTR_IS_QP         "IsQP"          /* Model has quadratic obj? */
-//C     #define GRB_INT_ATTR_IS_QCP        "IsQCP"         /* Model has quadratic constr? */
-//C     #define GRB_STR_ATTR_SERVER        "Server"        /* Name of compute server */
+// Model attributes
+enum GRB_INT_ATTR_NUMCONSTRS    = "NumConstrs"    ;  // # of constraints
+enum GRB_INT_ATTR_NUMVARS       = "NumVars"       ;  // # of vars
+enum GRB_INT_ATTR_NUMSOS        = "NumSOS"        ;  // # of sos constraints
+enum GRB_INT_ATTR_NUMQCONSTRS   = "NumQConstrs"   ;  // # of quadratic constraints
+enum GRB_INT_ATTR_NUMNZS        = "NumNZs"        ;  // # of nz in A
+enum GRB_DBL_ATTR_DNUMNZS       = "DNumNZs"       ;  // # of nz in A
+enum GRB_INT_ATTR_NUMQNZS       = "NumQNZs"       ;  // # of nz in Q
+enum GRB_INT_ATTR_NUMQCNZS      = "NumQCNZs"      ;  // # of nz in q constraints
+enum GRB_INT_ATTR_NUMINTVARS    = "NumIntVars"    ;  // # of integer vars
+enum GRB_INT_ATTR_NUMBINVARS    = "NumBinVars"    ;  // # of binary vars
+enum GRB_INT_ATTR_NUMPWLOBJVARS = "NumPWLObjVars" ;  // # of variables with PWL obj.
+enum GRB_STR_ATTR_MODELNAME     = "ModelName"     ;  // model name
+enum GRB_INT_ATTR_MODELSENSE    = "ModelSense"    ;  // 1 = min, -1 = max
+enum GRB_DBL_ATTR_OBJCON        = "ObjCon"        ;  // Objective constant
+enum GRB_INT_ATTR_IS_MIP        = "IsMIP"         ;  // Is model a MIP?
+enum GRB_INT_ATTR_IS_QP         = "IsQP"          ;  // Model has quadratic obj?
+enum GRB_INT_ATTR_IS_QCP        = "IsQCP"         ;  // Model has quadratic constr?
+enum GRB_STR_ATTR_SERVER        = "Server"        ;  // Name of compute server
 
-/* Variable attributes */
-//C     #define GRB_DBL_ATTR_LB             "LB"              /* Lower bound */
-//C     #define GRB_DBL_ATTR_UB             "UB"              /* Upper bound */
-//C     #define GRB_DBL_ATTR_OBJ            "Obj"             /* Objective coeff */
-//C     #define GRB_CHAR_ATTR_VTYPE         "VType"           /* Integrality type */
-//C     #define GRB_DBL_ATTR_START          "Start"           /* MIP start value */
-//C     #define GRB_DBL_ATTR_PSTART         "PStart"          /* LP primal solution warm start */
-//C     #define GRB_INT_ATTR_BRANCHPRIORITY "BranchPriority"  /* MIP branch priority */
-//C     #define GRB_STR_ATTR_VARNAME        "VarName"         /* Variable name */
-//C     #define GRB_INT_ATTR_PWLOBJCVX      "PWLObjCvx"       /* Convexity of variable PWL obj */
-//C     #define GRB_DBL_ATTR_VARHINTVAL     "VarHintVal"
-//C     #define GRB_INT_ATTR_VARHINTPRI     "VarHintPri"
+// Variable attributes
+enum GRB_DBL_ATTR_LB             = "LB"             ;  // Lower bound
+enum GRB_DBL_ATTR_UB             = "UB"             ;  // Upper bound
+enum GRB_DBL_ATTR_OBJ            = "Obj"            ;  // Objective coeff
+enum GRB_CHAR_ATTR_VTYPE         = "VType"          ;  // Integrality type
+enum GRB_DBL_ATTR_START          = "Start"          ;  // MIP start value
+enum GRB_DBL_ATTR_PSTART         = "PStart"         ;  // LP primal solution warm start
+enum GRB_INT_ATTR_BRANCHPRIORITY = "BranchPriority" ;  // MIP branch priority
+enum GRB_STR_ATTR_VARNAME        = "VarName"        ;  // Variable name
+enum GRB_INT_ATTR_PWLOBJCVX      = "PWLObjCvx"      ;  // Convexity of variable PWL obj
+enum GRB_DBL_ATTR_VARHINTVAL     = "VarHintVal"     ;
+enum GRB_INT_ATTR_VARHINTPRI     = "VarHintPri"     ;
 
-/* Constraint attributes */
-//C     #define GRB_DBL_ATTR_RHS        "RHS"        /* RHS */
-//C     #define GRB_DBL_ATTR_DSTART     "DStart"     /* LP dual solution warm start */
-//C     #define GRB_CHAR_ATTR_SENSE     "Sense"      /* Sense ('<', '>', or '=') */
-//C     #define GRB_STR_ATTR_CONSTRNAME "ConstrName" /* Constraint name */
-//C     #define GRB_INT_ATTR_LAZY       "Lazy"       /* Lazy constraint? */
+// Constraint attributes
+enum GRB_DBL_ATTR_RHS        = "RHS"        ; // RHS
+enum GRB_DBL_ATTR_DSTART     = "DStart"     ; // LP dual solution warm start
+enum GRB_CHAR_ATTR_SENSE     = "Sense"      ; // Sense ('<', '>', or '=')
+enum GRB_STR_ATTR_CONSTRNAME = "ConstrName" ; // Constraint name
+enum GRB_INT_ATTR_LAZY       = "Lazy"       ; // Lazy constraint?
 
-/* Quadratic constraint attributes */
-//C     #define GRB_DBL_ATTR_QCRHS    "QCRHS"   /* QC RHS */
-//C     #define GRB_CHAR_ATTR_QCSENSE "QCSense" /* QC sense ('<', '>', or '=') */
-//C     #define GRB_STR_ATTR_QCNAME   "QCName"  /* QC name */
+// Quadratic constraint attributes
+enum GRB_DBL_ATTR_QCRHS    = "QCRHS"   ; // QC RHS
+enum GRB_CHAR_ATTR_QCSENSE = "QCSense" ; // QC sense ('<', '>', or ' = ')
+enum GRB_STR_ATTR_QCNAME   = "QCName"  ; // QC name
 
-/* Model statistics */
-//C     #define GRB_DBL_ATTR_MAX_COEFF     "MaxCoeff"    /* Max (abs) nz coeff in A */
-//C     #define GRB_DBL_ATTR_MIN_COEFF     "MinCoeff"    /* Min (abs) nz coeff in A */
-//C     #define GRB_DBL_ATTR_MAX_BOUND     "MaxBound"    /* Max (abs) finite var bd */
-//C     #define GRB_DBL_ATTR_MIN_BOUND     "MinBound"    /* Min (abs) var bd */
-//C     #define GRB_DBL_ATTR_MAX_OBJ_COEFF "MaxObjCoeff" /* Max (abs) obj coeff */
-//C     #define GRB_DBL_ATTR_MIN_OBJ_COEFF "MinObjCoeff" /* Min (abs) obj coeff */
-//C     #define GRB_DBL_ATTR_MAX_RHS       "MaxRHS"      /* Max (abs) rhs coeff */
-//C     #define GRB_DBL_ATTR_MIN_RHS       "MinRHS"      /* Min (abs) rhs coeff */
+// Model statistics
+enum GRB_DBL_ATTR_MAX_COEFF     = "MaxCoeff"    ; // Max (abs) nz coeff in A
+enum GRB_DBL_ATTR_MIN_COEFF     = "MinCoeff"    ; // Min (abs) nz coeff in A
+enum GRB_DBL_ATTR_MAX_BOUND     = "MaxBound"    ; // Max (abs) finite var bd
+enum GRB_DBL_ATTR_MIN_BOUND     = "MinBound"    ; // Min (abs) var bd
+enum GRB_DBL_ATTR_MAX_OBJ_COEFF = "MaxObjCoeff" ; // Max (abs) obj coeff
+enum GRB_DBL_ATTR_MIN_OBJ_COEFF = "MinObjCoeff" ; // Min (abs) obj coeff
+enum GRB_DBL_ATTR_MAX_RHS       = "MaxRHS"      ; // Max (abs) rhs coeff
+enum GRB_DBL_ATTR_MIN_RHS       = "MinRHS"      ; // Min (abs) rhs coeff
 
-/* Model solution attributes */
-//C     #define GRB_DBL_ATTR_RUNTIME       "Runtime"     /* Run time for optimization */
-const GRB_INT_ATTR_STATUS = "Status";      /* Optimization status */
-const GRB_DBL_ATTR_OBJVAL = "ObjVal";      /* Solution objective */
-//C     #define GRB_DBL_ATTR_OBJBOUND      "ObjBound"    /* Best bound on solution */
-//C     #define GRB_DBL_ATTR_OBJBOUNDC     "ObjBoundC"   /* Continuous bound */
-//C     #define GRB_DBL_ATTR_MIPGAP        "MIPGap"      /* MIP optimality gap */
-//C     #define GRB_INT_ATTR_SOLCOUNT      "SolCount"    /* # of solutions found */
-//C     #define GRB_DBL_ATTR_ITERCOUNT     "IterCount"   /* Iters performed (simplex) */
-//C     #define GRB_INT_ATTR_BARITERCOUNT  "BarIterCount" /* Iters performed (barrier) */
-//C     #define GRB_DBL_ATTR_NODECOUNT     "NodeCount"    /* Nodes explored (B&C) */
-//C     #define GRB_DBL_ATTR_OPENNODECOUNT "OpenNodeCount" /* Unexplored nodes (B&C) */
-//C     #define GRB_INT_ATTR_HASDUALNORM   "HasDualNorm"  
-/* 0, no basis,
-                                                     1, has basis, so can be computed
-                                                     2, available */
+// Model solution attributes
+enum GRB_DBL_ATTR_RUNTIME       = "Runtime";       // Run time for optimization
+enum GRB_INT_ATTR_STATUS        = "Status";        // Optimization status
+enum GRB_DBL_ATTR_OBJVAL        = "ObjVal";        // Solution objective
+enum GRB_DBL_ATTR_OBJBOUND      = "ObjBound";      // Best bound on solution
+enum GRB_DBL_ATTR_OBJBOUNDC     = "ObjBoundC";     // Continuous bound
+enum GRB_DBL_ATTR_MIPGAP        = "MIPGap";        // MIP optimality gap
+enum GRB_INT_ATTR_SOLCOUNT      = "SolCount";      // # of solutions found
+enum GRB_DBL_ATTR_ITERCOUNT     = "IterCount";     // Iters performed (simplex)
+enum GRB_INT_ATTR_BARITERCOUNT  = "BarIterCount";  // Iters performed (barrier)
+enum GRB_DBL_ATTR_NODECOUNT     = "NodeCount";     // Nodes explored (B&C)
+enum GRB_DBL_ATTR_OPENNODECOUNT = "OpenNodeCount"; // Unexplored nodes (B&C)
+enum GRB_INT_ATTR_HASDUALNORM   = "HasDualNorm";   // 0, no basis,
+                                                   // 1, has basis, so can be computed
+                                                   // 2, available
 
-/* Variable attributes related to the current solution */
-const GRB_DBL_ATTR_X = "X";         /* Solution value */
-//C     #define GRB_DBL_ATTR_Xn        "Xn"        /* Alternate MIP solution */
-//C     #define GRB_DBL_ATTR_BARX      "BarX"      /* Best barrier iterate */
-//C     #define GRB_DBL_ATTR_RC        "RC"        /* Reduced costs */
-//C     #define GRB_DBL_ATTR_VDUALNORM "VDualNorm" /* Dual norm square */
-//C     #define GRB_INT_ATTR_VBASIS    "VBasis"    /* Variable basis status */
+// Variable attributes related to the current solution
+enum GRB_DBL_ATTR_X         = "X"         ;  // Solution value
+enum GRB_DBL_ATTR_Xn        = "Xn"        ;  // Alternate MIP solution
+enum GRB_DBL_ATTR_BARX      = "BarX"      ;  // Best barrier iterate
+enum GRB_DBL_ATTR_RC        = "RC"        ;  // Reduced costs
+enum GRB_DBL_ATTR_VDUALNORM = "VDualNorm" ;  // Dual norm square
+enum GRB_INT_ATTR_VBASIS    = "VBasis"    ;  // Variable basis status
 
-/* Constraint attributes related to the current solution */
-//C     #define GRB_DBL_ATTR_PI        "Pi"        /* Dual value */
-//C     #define GRB_DBL_ATTR_QCPI      "QCPi"      /* Dual value for QC */
-//C     #define GRB_DBL_ATTR_SLACK     "Slack"     /* Constraint slack */
-//C     #define GRB_DBL_ATTR_QCSLACK   "QCSlack"   /* QC Constraint slack */
-//C     #define GRB_DBL_ATTR_CDUALNORM "CDualNorm" /* Dual norm square */
-//C     #define GRB_INT_ATTR_CBASIS    "CBasis"    /* Constraint basis status */
+// Constraint attributes related to the current solution
+enum GRB_DBL_ATTR_PI        = "Pi"        ;  // Dual value
+enum GRB_DBL_ATTR_QCPI      = "QCPi"      ;  // Dual value for QC
+enum GRB_DBL_ATTR_SLACK     = "Slack"     ;  // Constraint slack
+enum GRB_DBL_ATTR_QCSLACK   = "QCSlack"   ;  // QC Constraint slack
+enum GRB_DBL_ATTR_CDUALNORM = "CDualNorm" ;  // Dual norm square
+enum GRB_INT_ATTR_CBASIS    = "CBasis"    ;  // Constraint basis status
 
-/* Solution quality attributes */
-//C     #define GRB_DBL_ATTR_BOUND_VIO              "BoundVio"
-//C     #define GRB_DBL_ATTR_BOUND_SVIO             "BoundSVio"
-//C     #define GRB_INT_ATTR_BOUND_VIO_INDEX        "BoundVioIndex"
-//C     #define GRB_INT_ATTR_BOUND_SVIO_INDEX       "BoundSVioIndex"
-//C     #define GRB_DBL_ATTR_BOUND_VIO_SUM          "BoundVioSum"
-//C     #define GRB_DBL_ATTR_BOUND_SVIO_SUM         "BoundSVioSum"
-//C     #define GRB_DBL_ATTR_CONSTR_VIO             "ConstrVio"
-//C     #define GRB_DBL_ATTR_CONSTR_SVIO            "ConstrSVio"
-//C     #define GRB_INT_ATTR_CONSTR_VIO_INDEX       "ConstrVioIndex"
-//C     #define GRB_INT_ATTR_CONSTR_SVIO_INDEX      "ConstrSVioIndex"
-//C     #define GRB_DBL_ATTR_CONSTR_VIO_SUM         "ConstrVioSum"
-//C     #define GRB_DBL_ATTR_CONSTR_SVIO_SUM        "ConstrSVioSum"
-//C     #define GRB_DBL_ATTR_CONSTR_RESIDUAL        "ConstrResidual"
-//C     #define GRB_DBL_ATTR_CONSTR_SRESIDUAL       "ConstrSResidual"
-//C     #define GRB_INT_ATTR_CONSTR_RESIDUAL_INDEX  "ConstrResidualIndex"
-//C     #define GRB_INT_ATTR_CONSTR_SRESIDUAL_INDEX "ConstrSResidualIndex"
-//C     #define GRB_DBL_ATTR_CONSTR_RESIDUAL_SUM    "ConstrResidualSum"
-//C     #define GRB_DBL_ATTR_CONSTR_SRESIDUAL_SUM   "ConstrSResidualSum"
-//C     #define GRB_DBL_ATTR_DUAL_VIO               "DualVio"
-//C     #define GRB_DBL_ATTR_DUAL_SVIO              "DualSVio"
-//C     #define GRB_INT_ATTR_DUAL_VIO_INDEX         "DualVioIndex"
-//C     #define GRB_INT_ATTR_DUAL_SVIO_INDEX        "DualSVioIndex"
-//C     #define GRB_DBL_ATTR_DUAL_VIO_SUM           "DualVioSum"
-//C     #define GRB_DBL_ATTR_DUAL_SVIO_SUM          "DualSVioSum"
-//C     #define GRB_DBL_ATTR_DUAL_RESIDUAL          "DualResidual"
-//C     #define GRB_DBL_ATTR_DUAL_SRESIDUAL         "DualSResidual"
-//C     #define GRB_INT_ATTR_DUAL_RESIDUAL_INDEX    "DualResidualIndex"
-//C     #define GRB_INT_ATTR_DUAL_SRESIDUAL_INDEX   "DualSResidualIndex"
-//C     #define GRB_DBL_ATTR_DUAL_RESIDUAL_SUM      "DualResidualSum"
-//C     #define GRB_DBL_ATTR_DUAL_SRESIDUAL_SUM     "DualSResidualSum"
-//C     #define GRB_DBL_ATTR_INT_VIO                "IntVio"
-//C     #define GRB_INT_ATTR_INT_VIO_INDEX          "IntVioIndex"
-//C     #define GRB_DBL_ATTR_INT_VIO_SUM            "IntVioSum"
-//C     #define GRB_DBL_ATTR_COMPL_VIO              "ComplVio"
-//C     #define GRB_INT_ATTR_COMPL_VIO_INDEX        "ComplVioIndex"
-//C     #define GRB_DBL_ATTR_COMPL_VIO_SUM          "ComplVioSum"
-//C     #define GRB_DBL_ATTR_KAPPA                  "Kappa"
-//C     #define GRB_DBL_ATTR_KAPPA_EXACT            "KappaExact"
-//C     #define GRB_DBL_ATTR_N2KAPPA                "N2Kappa"
+// Solution quality attributes
+enum GRB_DBL_ATTR_BOUND_VIO              = "BoundVio";
+enum GRB_DBL_ATTR_BOUND_SVIO             = "BoundSVio";
+enum GRB_INT_ATTR_BOUND_VIO_INDEX        = "BoundVioIndex";
+enum GRB_INT_ATTR_BOUND_SVIO_INDEX       = "BoundSVioIndex";
+enum GRB_DBL_ATTR_BOUND_VIO_SUM          = "BoundVioSum";
+enum GRB_DBL_ATTR_BOUND_SVIO_SUM         = "BoundSVioSum";
+enum GRB_DBL_ATTR_CONSTR_VIO             = "ConstrVio";
+enum GRB_DBL_ATTR_CONSTR_SVIO            = "ConstrSVio";
+enum GRB_INT_ATTR_CONSTR_VIO_INDEX       = "ConstrVioIndex";
+enum GRB_INT_ATTR_CONSTR_SVIO_INDEX      = "ConstrSVioIndex";
+enum GRB_DBL_ATTR_CONSTR_VIO_SUM         = "ConstrVioSum";
+enum GRB_DBL_ATTR_CONSTR_SVIO_SUM        = "ConstrSVioSum";
+enum GRB_DBL_ATTR_CONSTR_RESIDUAL        = "ConstrResidual";
+enum GRB_DBL_ATTR_CONSTR_SRESIDUAL       = "ConstrSResidual";
+enum GRB_INT_ATTR_CONSTR_RESIDUAL_INDEX  = "ConstrResidualIndex";
+enum GRB_INT_ATTR_CONSTR_SRESIDUAL_INDEX = "ConstrSResidualIndex";
+enum GRB_DBL_ATTR_CONSTR_RESIDUAL_SUM    = "ConstrResidualSum";
+enum GRB_DBL_ATTR_CONSTR_SRESIDUAL_SUM   = "ConstrSResidualSum";
+enum GRB_DBL_ATTR_DUAL_VIO               = "DualVio";
+enum GRB_DBL_ATTR_DUAL_SVIO              = "DualSVio";
+enum GRB_INT_ATTR_DUAL_VIO_INDEX         = "DualVioIndex";
+enum GRB_INT_ATTR_DUAL_SVIO_INDEX        = "DualSVioIndex";
+enum GRB_DBL_ATTR_DUAL_VIO_SUM           = "DualVioSum";
+enum GRB_DBL_ATTR_DUAL_SVIO_SUM          = "DualSVioSum";
+enum GRB_DBL_ATTR_DUAL_RESIDUAL          = "DualResidual";
+enum GRB_DBL_ATTR_DUAL_SRESIDUAL         = "DualSResidual";
+enum GRB_INT_ATTR_DUAL_RESIDUAL_INDEX    = "DualResidualIndex";
+enum GRB_INT_ATTR_DUAL_SRESIDUAL_INDEX   = "DualSResidualIndex";
+enum GRB_DBL_ATTR_DUAL_RESIDUAL_SUM      = "DualResidualSum";
+enum GRB_DBL_ATTR_DUAL_SRESIDUAL_SUM     = "DualSResidualSum";
+enum GRB_DBL_ATTR_INT_VIO                = "IntVio";
+enum GRB_INT_ATTR_INT_VIO_INDEX          = "IntVioIndex";
+enum GRB_DBL_ATTR_INT_VIO_SUM            = "IntVioSum";
+enum GRB_DBL_ATTR_COMPL_VIO              = "ComplVio";
+enum GRB_INT_ATTR_COMPL_VIO_INDEX        = "ComplVioIndex";
+enum GRB_DBL_ATTR_COMPL_VIO_SUM          = "ComplVioSum";
+enum GRB_DBL_ATTR_KAPPA                  = "Kappa";
+enum GRB_DBL_ATTR_KAPPA_EXACT            = "KappaExact";
+enum GRB_DBL_ATTR_N2KAPPA                = "N2Kappa";
 
-/* LP sensitivity analysis */
-//C     #define GRB_DBL_ATTR_SA_OBJLOW "SAObjLow"
-//C     #define GRB_DBL_ATTR_SA_OBJUP  "SAObjUp"
-//C     #define GRB_DBL_ATTR_SA_LBLOW  "SALBLow"
-//C     #define GRB_DBL_ATTR_SA_LBUP   "SALBUp"
-//C     #define GRB_DBL_ATTR_SA_UBLOW  "SAUBLow"
-//C     #define GRB_DBL_ATTR_SA_UBUP   "SAUBUp"
-//C     #define GRB_DBL_ATTR_SA_RHSLOW "SARHSLow"
-//C     #define GRB_DBL_ATTR_SA_RHSUP  "SARHSUp"
+// LP sensitivity analysis
+enum GRB_DBL_ATTR_SA_OBJLOW = "SAObjLow";
+enum GRB_DBL_ATTR_SA_OBJUP  = "SAObjUp";
+enum GRB_DBL_ATTR_SA_LBLOW  = "SALBLow";
+enum GRB_DBL_ATTR_SA_LBUP   = "SALBUp";
+enum GRB_DBL_ATTR_SA_UBLOW  = "SAUBLow";
+enum GRB_DBL_ATTR_SA_UBUP   = "SAUBUp";
+enum GRB_DBL_ATTR_SA_RHSLOW = "SARHSLow";
+enum GRB_DBL_ATTR_SA_RHSUP  = "SARHSUp";
 
-/* IIS */
-//C     #define GRB_INT_ATTR_IIS_MINIMAL "IISMinimal" /* Boolean: Is IIS Minimal? */
-//C     #define GRB_INT_ATTR_IIS_LB      "IISLB"      /* Boolean: Is var LB in IIS? */
-//C     #define GRB_INT_ATTR_IIS_UB      "IISUB"      /* Boolean: Is var UB in IIS? */
-//C     #define GRB_INT_ATTR_IIS_CONSTR  "IISConstr"  /* Boolean: Is constr in IIS? */
-//C     #define GRB_INT_ATTR_IIS_SOS     "IISSOS"     /* Boolean: Is SOS in IIS? */
-//C     #define GRB_INT_ATTR_IIS_QCONSTR "IISQConstr" /* Boolean: Is QConstr in IIS? */
+// IIS
+enum GRB_INT_ATTR_IIS_MINIMAL = "IISMinimal" ; // Boolean: Is IIS Minimal?
+enum GRB_INT_ATTR_IIS_LB      = "IISLB"      ; // Boolean: Is var LB in IIS?
+enum GRB_INT_ATTR_IIS_UB      = "IISUB"      ; // Boolean: Is var UB in IIS?
+enum GRB_INT_ATTR_IIS_CONSTR  = "IISConstr"  ; // Boolean: Is constr in IIS?
+enum GRB_INT_ATTR_IIS_SOS     = "IISSOS"     ; // Boolean: Is SOS in IIS?
+enum GRB_INT_ATTR_IIS_QCONSTR = "IISQConstr" ; // Boolean: Is QConstr in IIS?
 
-/* Tuning */
-//C     #define GRB_INT_ATTR_TUNE_RESULTCOUNT "TuneResultCount"
+// Tuning
+enum GRB_INT_ATTR_TUNE_RESULTCOUNT = "TuneResultCount";
 
-/* advanced simplex features */
-//C     #define GRB_DBL_ATTR_FARKASDUAL  "FarkasDual"
-//C     #define GRB_DBL_ATTR_FARKASPROOF "FarkasProof"
-//C     #define GRB_DBL_ATTR_UNBDRAY     "UnbdRay"
-//C     #define GRB_INT_ATTR_INFEASVAR   "InfeasVar"
-//C     #define GRB_INT_ATTR_UNBDVAR     "UnbdVar"
+// advanced simplex features
+enum GRB_DBL_ATTR_FARKASDUAL  = "FarkasDual";
+enum GRB_DBL_ATTR_FARKASPROOF = "FarkasProof";
+enum GRB_DBL_ATTR_UNBDRAY     = "UnbdRay";
+enum GRB_INT_ATTR_INFEASVAR   = "InfeasVar";
+enum GRB_INT_ATTR_UNBDVAR     = "UnbdVar";
 
-/* Presolve attribute */
-//C     #define GRB_INT_ATTR_VARPRESTAT "VarPreStat"
-//C     #define GRB_DBL_ATTR_PREFIXVAL  "PreFixVal"
+// Presolve attribute
+enum GRB_INT_ATTR_VARPRESTAT = "VarPreStat";
+enum GRB_DBL_ATTR_PREFIXVAL  = "PreFixVal";
 
-//C     #define GRB_INT_PAR_BARITERLIMIT   "BarIterLimit"
-//C     #define GRB_DBL_PAR_CUTOFF         "Cutoff"
-//C     #define GRB_DBL_PAR_ITERATIONLIMIT "IterationLimit"
-//C     #define GRB_DBL_PAR_NODELIMIT      "NodeLimit"
-//C     #define GRB_INT_PAR_SOLUTIONLIMIT  "SolutionLimit"
-//C     #define GRB_DBL_PAR_TIMELIMIT      "TimeLimit"
 
-/* Tolerances */
 
-//C     #define GRB_DBL_PAR_FEASIBILITYTOL "FeasibilityTol"
-//C     #define GRB_DBL_PAR_INTFEASTOL     "IntFeasTol"
-//C     #define GRB_DBL_PAR_MARKOWITZTOL   "MarkowitzTol"
-//C     #define GRB_DBL_PAR_MIPGAP         "MIPGap"
-//C     #define GRB_DBL_PAR_MIPGAPABS      "MIPGapAbs"
-//C     #define GRB_DBL_PAR_OPTIMALITYTOL  "OptimalityTol"
-//C     #define GRB_DBL_PAR_PSDTOL         "PSDTol"
+enum GRB_INT_PAR_BARITERLIMIT   = "BarIterLimit";
+enum GRB_DBL_PAR_CUTOFF         = "Cutoff";
+enum GRB_DBL_PAR_ITERATIONLIMIT = "IterationLimit";
+enum GRB_DBL_PAR_NODELIMIT      = "NodeLimit";
+enum GRB_INT_PAR_SOLUTIONLIMIT  = "SolutionLimit";
+enum GRB_DBL_PAR_TIMELIMIT      = "TimeLimit";
 
-/* Simplex */
+// Tolerances
+enum GRB_DBL_PAR_FEASIBILITYTOL = "FeasibilityTol";
+enum GRB_DBL_PAR_INTFEASTOL     = "IntFeasTol";
+enum GRB_DBL_PAR_MARKOWITZTOL   = "MarkowitzTol";
+enum GRB_DBL_PAR_MIPGAP         = "MIPGap";
+enum GRB_DBL_PAR_MIPGAPABS      = "MIPGapAbs";
+enum GRB_DBL_PAR_OPTIMALITYTOL  = "OptimalityTol";
+enum GRB_DBL_PAR_PSDTOL         = "PSDTol";
 
-//C     #define GRB_INT_PAR_METHOD         "Method"
-//C     #define GRB_DBL_PAR_PERTURBVALUE   "PerturbValue"
-//C     #define GRB_DBL_PAR_OBJSCALE       "ObjScale"
-//C     #define GRB_INT_PAR_SCALEFLAG      "ScaleFlag"
-//C     #define GRB_INT_PAR_SIMPLEXPRICING "SimplexPricing"
-//C     #define GRB_INT_PAR_QUAD           "Quad"
-//C     #define GRB_INT_PAR_NORMADJUST     "NormAdjust"
-//C     #define GRB_INT_PAR_SIFTING        "Sifting"
-//C     #define GRB_INT_PAR_SIFTMETHOD     "SiftMethod"
+// Simplex
+enum GRB_INT_PAR_METHOD         = "Method";
+enum GRB_DBL_PAR_PERTURBVALUE   = "PerturbValue";
+enum GRB_DBL_PAR_OBJSCALE       = "ObjScale";
+enum GRB_INT_PAR_SCALEFLAG      = "ScaleFlag";
+enum GRB_INT_PAR_SIMPLEXPRICING = "SimplexPricing";
+enum GRB_INT_PAR_QUAD           = "Quad";
+enum GRB_INT_PAR_NORMADJUST     = "NormAdjust";
+enum GRB_INT_PAR_SIFTING        = "Sifting";
+enum GRB_INT_PAR_SIFTMETHOD     = "SiftMethod";
 
-/* Barrier */
+// Barrier
+enum GRB_DBL_PAR_BARCONVTOL     = "BarConvTol";
+enum GRB_INT_PAR_BARCORRECTORS  = "BarCorrectors";
+enum GRB_INT_PAR_BARHOMOGENEOUS = "BarHomogeneous";
+enum GRB_INT_PAR_BARORDER       = "BarOrder";
+enum GRB_DBL_PAR_BARQCPCONVTOL  = "BarQCPConvTol";
+enum GRB_INT_PAR_CROSSOVER      = "Crossover";
+enum GRB_INT_PAR_CROSSOVERBASIS = "CrossoverBasis";
 
-//C     #define GRB_DBL_PAR_BARCONVTOL     "BarConvTol"
-//C     #define GRB_INT_PAR_BARCORRECTORS  "BarCorrectors"
-//C     #define GRB_INT_PAR_BARHOMOGENEOUS "BarHomogeneous"
-//C     #define GRB_INT_PAR_BARORDER       "BarOrder"
-//C     #define GRB_DBL_PAR_BARQCPCONVTOL  "BarQCPConvTol"
-//C     #define GRB_INT_PAR_CROSSOVER      "Crossover"
-//C     #define GRB_INT_PAR_CROSSOVERBASIS "CrossoverBasis"
+// MIP
+enum GRB_INT_PAR_BRANCHDIR         = "BranchDir";
+enum GRB_INT_PAR_DISCONNECTED      = "Disconnected";
+enum GRB_DBL_PAR_HEURISTICS        = "Heuristics";
+enum GRB_DBL_PAR_IMPROVESTARTGAP   = "ImproveStartGap";
+enum GRB_DBL_PAR_IMPROVESTARTTIME  = "ImproveStartTime";
+enum GRB_DBL_PAR_IMPROVESTARTNODES = "ImproveStartNodes";
+enum GRB_INT_PAR_MINRELNODES       = "MinRelNodes";
+enum GRB_INT_PAR_MIPFOCUS          = "MIPFocus";
+enum GRB_STR_PAR_NODEFILEDIR       = "NodefileDir";
+enum GRB_DBL_PAR_NODEFILESTART     = "NodefileStart";
+enum GRB_INT_PAR_NODEMETHOD        = "NodeMethod";
+enum GRB_INT_PAR_NORELHEURISTIC    = "NoRelHeuristic";
+enum GRB_INT_PAR_PUMPPASSES        = "PumpPasses";
+enum GRB_INT_PAR_RINS              = "RINS";
+enum GRB_INT_PAR_SUBMIPNODES       = "SubMIPNodes";
+enum GRB_INT_PAR_SYMMETRY          = "Symmetry";
+enum GRB_INT_PAR_VARBRANCH         = "VarBranch";
+enum GRB_INT_PAR_SOLUTIONNUMBER    = "SolutionNumber";
+enum GRB_INT_PAR_ZEROOBJNODES      = "ZeroObjNodes";
 
-/* MIP */
+// MIP cuts
+enum GRB_INT_PAR_CUTS          = "Cuts";
+enum GRB_INT_PAR_CLIQUECUTS    = "CliqueCuts";
+enum GRB_INT_PAR_COVERCUTS     = "CoverCuts";
+enum GRB_INT_PAR_FLOWCOVERCUTS = "FlowCoverCuts";
+enum GRB_INT_PAR_FLOWPATHCUTS  = "FlowPathCuts";
+enum GRB_INT_PAR_GUBCOVERCUTS  = "GUBCoverCuts";
+enum GRB_INT_PAR_IMPLIEDCUTS   = "ImpliedCuts";
+enum GRB_INT_PAR_MIPSEPCUTS    = "MIPSepCuts";
+enum GRB_INT_PAR_MIRCUTS       = "MIRCuts";
+enum GRB_INT_PAR_MODKCUTS      = "ModKCuts";
+enum GRB_INT_PAR_ZEROHALFCUTS  = "ZeroHalfCuts";
+enum GRB_INT_PAR_NETWORKCUTS   = "NetworkCuts";
+enum GRB_INT_PAR_SUBMIPCUTS    = "SubMIPCuts";
+enum GRB_INT_PAR_CUTAGGPASSES  = "CutAggPasses";
+enum GRB_INT_PAR_CUTPASSES     = "CutPasses";
+enum GRB_INT_PAR_GOMORYPASSES  = "GomoryPasses";
 
-//C     #define GRB_INT_PAR_BRANCHDIR         "BranchDir"
-//C     #define GRB_INT_PAR_DISCONNECTED      "Disconnected"
-//C     #define GRB_DBL_PAR_HEURISTICS        "Heuristics"
-//C     #define GRB_DBL_PAR_IMPROVESTARTGAP   "ImproveStartGap"
-//C     #define GRB_DBL_PAR_IMPROVESTARTTIME  "ImproveStartTime"
-//C     #define GRB_DBL_PAR_IMPROVESTARTNODES "ImproveStartNodes"
-//C     #define GRB_INT_PAR_MINRELNODES       "MinRelNodes"
-//C     #define GRB_INT_PAR_MIPFOCUS          "MIPFocus"
-//C     #define GRB_STR_PAR_NODEFILEDIR       "NodefileDir"
-//C     #define GRB_DBL_PAR_NODEFILESTART     "NodefileStart"
-//C     #define GRB_INT_PAR_NODEMETHOD        "NodeMethod"
-//C     #define GRB_INT_PAR_NORELHEURISTIC    "NoRelHeuristic"
-//C     #define GRB_INT_PAR_PUMPPASSES        "PumpPasses"
-//C     #define GRB_INT_PAR_RINS              "RINS"
-//C     #define GRB_INT_PAR_SUBMIPNODES       "SubMIPNodes"
-//C     #define GRB_INT_PAR_SYMMETRY          "Symmetry"
-//C     #define GRB_INT_PAR_VARBRANCH         "VarBranch"
-//C     #define GRB_INT_PAR_SOLUTIONNUMBER    "SolutionNumber"
-//C     #define GRB_INT_PAR_ZEROOBJNODES      "ZeroObjNodes"
+// Distributed algorithms
+enum GRB_STR_PAR_WORKERPOOL     = "WorkerPool";
+enum GRB_STR_PAR_WORKERPASSWORD = "WorkerPassword";
+enum GRB_INT_PAR_WORKERPORT     = "WorkerPort";
 
-/* MIP cuts */
-
-//C     #define GRB_INT_PAR_CUTS          "Cuts"
-
-//C     #define GRB_INT_PAR_CLIQUECUTS    "CliqueCuts"
-//C     #define GRB_INT_PAR_COVERCUTS     "CoverCuts"
-//C     #define GRB_INT_PAR_FLOWCOVERCUTS "FlowCoverCuts"
-//C     #define GRB_INT_PAR_FLOWPATHCUTS  "FlowPathCuts"
-//C     #define GRB_INT_PAR_GUBCOVERCUTS  "GUBCoverCuts"
-//C     #define GRB_INT_PAR_IMPLIEDCUTS   "ImpliedCuts"
-//C     #define GRB_INT_PAR_MIPSEPCUTS    "MIPSepCuts"
-//C     #define GRB_INT_PAR_MIRCUTS       "MIRCuts"
-//C     #define GRB_INT_PAR_MODKCUTS      "ModKCuts"
-//C     #define GRB_INT_PAR_ZEROHALFCUTS  "ZeroHalfCuts"
-//C     #define GRB_INT_PAR_NETWORKCUTS   "NetworkCuts"
-//C     #define GRB_INT_PAR_SUBMIPCUTS    "SubMIPCuts"
-
-//C     #define GRB_INT_PAR_CUTAGGPASSES  "CutAggPasses"
-//C     #define GRB_INT_PAR_CUTPASSES     "CutPasses"
-//C     #define GRB_INT_PAR_GOMORYPASSES  "GomoryPasses"
-
-/* Distributed algorithms */
-//C     #define GRB_STR_PAR_WORKERPOOL      "WorkerPool"
-//C     #define GRB_STR_PAR_WORKERPASSWORD  "WorkerPassword"
-//C     #define GRB_INT_PAR_WORKERPORT      "WorkerPort"
-
-/* Other */
-//C     #define GRB_INT_PAR_AGGREGATE         "Aggregate"
-//C     #define GRB_INT_PAR_AGGFILL           "AggFill"
-//C     #define GRB_INT_PAR_CONCURRENTMIP     "ConcurrentMIP"
-//C     #define GRB_INT_PAR_CONCURRENTJOBS    "ConcurrentJobs"
-//C     #define GRB_INT_PAR_DISPLAYINTERVAL   "DisplayInterval"
-//C     #define GRB_INT_PAR_DISTRIBUTEDMIPJOBS "DistributedMIPJobs"
-//C     #define GRB_INT_PAR_DUALREDUCTIONS    "DualReductions"
-//C     #define GRB_DBL_PAR_FEASRELAXBIGM     "FeasRelaxBigM"
-//C     #define GRB_INT_PAR_IISMETHOD         "IISMethod"
-//C     #define GRB_INT_PAR_INFUNBDINFO       "InfUnbdInfo"
-//C     #define GRB_INT_PAR_LAZYCONSTRAINTS   "LazyConstraints"
-//C     #define GRB_STR_PAR_LOGFILE           "LogFile"
-//C     #define GRB_INT_PAR_LOGTOCONSOLE      "LogToConsole"
-//C     #define GRB_INT_PAR_MIQCPMETHOD       "MIQCPMethod"
-//C     #define GRB_INT_PAR_NUMERICFOCUS      "NumericFocus"
-//C     #define GRB_INT_PAR_OUTPUTFLAG        "OutputFlag"
-//C     #define GRB_INT_PAR_PRECRUSH          "PreCrush"
-//C     #define GRB_INT_PAR_PREDEPROW         "PreDepRow"
-//C     #define GRB_INT_PAR_PREDUAL           "PreDual"
-//C     #define GRB_INT_PAR_PREPASSES         "PrePasses"
-//C     #define GRB_INT_PAR_PREQLINEARIZE     "PreQLinearize"
-//C     #define GRB_INT_PAR_PRESOLVE          "Presolve"
-//C     #define GRB_DBL_PAR_PRESOS1BIGM       "PreSOS1BigM"
-//C     #define GRB_DBL_PAR_PRESOS2BIGM       "PreSOS2BigM"
-//C     #define GRB_INT_PAR_PRESPARSIFY       "PreSparsify"
-//C     #define GRB_INT_PAR_PREMIQCPFORM      "PreMIQCPForm"
-//C     #define GRB_INT_PAR_QCPDUAL           "QCPDual"
-//C     #define GRB_INT_PAR_RECORD            "Record"
-//C     #define GRB_STR_PAR_RESULTFILE        "ResultFile"
-//C     #define GRB_INT_PAR_SEED              "Seed"
-//C     #define GRB_INT_PAR_THREADS           "Threads"
-//C     #define GRB_DBL_PAR_TUNETIMELIMIT     "TuneTimeLimit"
-//C     #define GRB_INT_PAR_TUNERESULTS       "TuneResults"
-//C     #define GRB_INT_PAR_TUNETRIALS        "TuneTrials"
-//C     #define GRB_INT_PAR_TUNEOUTPUT        "TuneOutput"
-//C     #define GRB_INT_PAR_TUNEJOBS          "TuneJobs"
-//C     #define GRB_INT_PAR_UPDATEMODE        "UpdateMode"
-//C     #define GRB_STR_PAR_DUMMY             "Dummy"
+// Other
+enum GRB_INT_PAR_AGGREGATE          = "Aggregate";
+enum GRB_INT_PAR_AGGFILL            = "AggFill";
+enum GRB_INT_PAR_CONCURRENTMIP      = "ConcurrentMIP";
+enum GRB_INT_PAR_CONCURRENTJOBS     = "ConcurrentJobs";
+enum GRB_INT_PAR_DISPLAYINTERVAL    = "DisplayInterval";
+enum GRB_INT_PAR_DISTRIBUTEDMIPJOBS = "DistributedMIPJobs";
+enum GRB_INT_PAR_DUALREDUCTIONS     = "DualReductions";
+enum GRB_DBL_PAR_FEASRELAXBIGM      = "FeasRelaxBigM";
+enum GRB_INT_PAR_IISMETHOD          = "IISMethod";
+enum GRB_INT_PAR_INFUNBDINFO        = "InfUnbdInfo";
+enum GRB_INT_PAR_LAZYCONSTRAINTS    = "LazyConstraints";
+enum GRB_STR_PAR_LOGFILE            = "LogFile";
+enum GRB_INT_PAR_LOGTOCONSOLE       = "LogToConsole";
+enum GRB_INT_PAR_MIQCPMETHOD        = "MIQCPMethod";
+enum GRB_INT_PAR_NUMERICFOCUS       = "NumericFocus";
+enum GRB_INT_PAR_OUTPUTFLAG         = "OutputFlag";
+enum GRB_INT_PAR_PRECRUSH           = "PreCrush";
+enum GRB_INT_PAR_PREDEPROW          = "PreDepRow";
+enum GRB_INT_PAR_PREDUAL            = "PreDual";
+enum GRB_INT_PAR_PREPASSES          = "PrePasses";
+enum GRB_INT_PAR_PREQLINEARIZE      = "PreQLinearize";
+enum GRB_INT_PAR_PRESOLVE           = "Presolve";
+enum GRB_DBL_PAR_PRESOS1BIGM        = "PreSOS1BigM";
+enum GRB_DBL_PAR_PRESOS2BIGM        = "PreSOS2BigM";
+enum GRB_INT_PAR_PRESPARSIFY        = "PreSparsify";
+enum GRB_INT_PAR_PREMIQCPFORM       = "PreMIQCPForm";
+enum GRB_INT_PAR_QCPDUAL            = "QCPDual";
+enum GRB_INT_PAR_RECORD             = "Record";
+enum GRB_STR_PAR_RESULTFILE         = "ResultFile";
+enum GRB_INT_PAR_SEED               = "Seed";
+enum GRB_INT_PAR_THREADS            = "Threads";
+enum GRB_DBL_PAR_TUNETIMELIMIT      = "TuneTimeLimit";
+enum GRB_INT_PAR_TUNERESULTS        = "TuneResults";
+enum GRB_INT_PAR_TUNETRIALS         = "TuneTrials";
+enum GRB_INT_PAR_TUNEOUTPUT         = "TuneOutput";
+enum GRB_INT_PAR_TUNEJOBS           = "TuneJobs";
+enum GRB_INT_PAR_UPDATEMODE         = "UpdateMode";
+enum GRB_STR_PAR_DUMMY              = "Dummy";
 
 
 /* Query interface */
