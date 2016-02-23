@@ -1,119 +1,195 @@
 import std.stdio;
 import std.c.stdlib;
+
 import gurobi.api_c;
 
 // Error reporting
 void failure(GRBenv* env)
 {
-  writeln("ERROR: ", GRBgeterrormsg(env));
-  exit(1);
+  throw new Exception("ERROR: GUROBI");
+}
+
+GRBenv* loadenv(string logfilename)
+{
+  GRBenv* env;
+  int error = GRBloadenv(&env, cast(char*)logfilename);
+  if (error)
+    throw new Exception("cannot load environment");
+  return env;
+}
+
+GRBmodel* newmodel(GRBenv* env, string modelname)
+{
+  GRBmodel* model;
+  int error = GRBnewmodel(env, &model, cast(char*)modelname, 0,
+                          cast(double*)null, cast(double*)null,
+                          cast(double*)null, cast(char*)null,
+                          cast(char**)null);
+  if (error)
+    failure(env);
+  return model;
+}
+
+  int getintattr(GRBmodel* model, string attr)
+{
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  int val;
+  int error = GRBgetintattr(model, cast(char*)attr, &val);
+  if (error)
+    failure(env);
+
+  return val;
+}
+
+double getdblattr(GRBmodel* model, string attr)
+{
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  double val;
+  int error = GRBgetdblattr(model, cast(char*)attr, &val);
+  if (error)
+    failure(env);
+
+  return val;
+}
+
+double[] getdblattrarray(GRBmodel* model, string attr, int length)
+{
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  double[] val = new double[length];
+  int error = GRBgetdblattrarray(model, cast(char*)attr, 0, length, cast(double*)val);
+  if (error)
+    failure(env);
+
+  return val;
+}
+
+void setintattr(GRBmodel* model, string attr, int value)
+{
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  int error = GRBsetintattr(model, cast(char*)attr, value);
+  if (error)
+    failure(env);
+}
+
+void addvars(GRBmodel* model, double[] obj, char[] vtype)
+{
+  assert(obj.length == vtype.length);
+
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  int error = GRBaddvars(model, cast(int)obj.length, 0, cast(int*)null, cast(int*)null,
+                         cast(double*)null, cast(double*)obj,
+                         cast(double*)null, cast(double*)null,
+                         cast(char*)vtype, cast(char**)null);
+  if (error)
+    failure(env);
+}
+
+void addconstr(GRBmodel* model, int[] ind, double[] val, char sense, double rhs,
+               string cname)
+{
+  assert(ind.length == val.length);
+
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  int error = GRBaddconstr(model, cast(int)ind.length, cast(int*)ind, cast(double*)val,
+                           sense, rhs, cast(char*)cname);
+  if (error)
+    failure(env);
+}
+
+void updatemodel(GRBmodel* model)
+{
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  int error = GRBupdatemodel(model);
+  if (error)
+    failure(env);
+}
+
+void optimize(GRBmodel* model)
+{
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  int error = GRBoptimize(model);
+  if (error)
+    failure(env);
+}
+
+void write(GRBmodel* model, string filename)
+{
+  GRBenv* env = GRBgetenv(model);
+  assert(env != null);
+
+  int error = GRBwrite(model, cast(char*)filename);
+  if (error)
+    failure(env);
 }
 
 void main()
 {
-  int       error = 0;
-  double    sol[3];
-  int       ind[3];
-  double    val[3];
-  double    obj[3];
-  char      vtype[3];
-  int       optimstatus;
-  double    objval;
-
   // Create environment
-  GRBenv* env;
-  error = GRBloadenv(&env, cast(char*)"mip1.log");
-  if (error) exit(1);
+  GRBenv* env = loadenv("mip1.log");
   scope(exit) {
-    // Free environment
-    GRBfreeenv(env);
+    GRBfreeenv(env);  // Free environment
   }
 
   // Create an empty model
-  GRBmodel* model;
-  error = GRBnewmodel(env, &model, cast(char*)"mip1", 0,
-          cast(double*)null, cast(double*)null, cast(double*)null,
-          cast(char*)null, cast(char**)null);
-  if (error)
-    failure(env);
+  GRBmodel* model = newmodel(env, "mip1");;
   scope(exit) {
-    // Free model
-    GRBfreemodel(model);
+    GRBfreemodel(model);  // Free model
   }
 
   // Add variables
-  obj[0] = 1;
-  obj[1] = 1;
-  obj[2] = 2;
-
-  vtype[0] = GRB_BINARY;
-  vtype[1] = GRB_BINARY;
-  vtype[2] = GRB_BINARY;
-
-  error = GRBaddvars(model, 3, 0, cast(int*)null, cast(int*)null, cast(double*)null,
-                     cast(double*)obj, cast(double*)null, cast(double*)null,
-                     cast(char*)vtype, cast(char**)null);
-  if (error)
-    failure(env);
+  addvars(model, [1, 1, 2], [GRB_BINARY, GRB_BINARY, GRB_BINARY]);
 
   // Change objective sense to maximization
-  error = GRBsetintattr(model, cast(char*)"ModelSense", GRB_MAXIMIZE);
-  if (error)
-    failure(env);
+  setintattr(model, "ModelSense", GRB_MAXIMIZE);
 
   // Integrate new variables
-  error = GRBupdatemodel(model);
-  if (error)
-    failure(env);
-
+  updatemodel(model);
 
   // First constraint: x + 2 y + 3 z <= 4
-  ind[0] = 0; ind[1] = 1; ind[2] = 2;
-  val[0] = 1; val[1] = 2; val[2] = 3;
-  error = GRBaddconstr(model, 3, cast(int*)ind, cast(double*)val,
-                       GRB_LESS_EQUAL, 4.0, cast(char*)"c0");
-  if (error)
-    failure(env);
+  addconstr(model, [0, 1, 2], [1, 2, 3], GRB_LESS_EQUAL, 4.0, "c0");
 
   // Second constraint: x + y >= 1
-  ind[0] = 0; ind[1] = 1;
-  val[0] = 1; val[1] = 1;
-  error = GRBaddconstr(model, 2, cast(int*)ind, cast(double*)val,
-                       GRB_GREATER_EQUAL, 1.0, cast(char*)"c1");
-  if (error)
-     failure(env);
+  addconstr(model, [0, 1], [1, 1], GRB_GREATER_EQUAL, 1.0, "c1");
 
   // Optimize model
-  error = GRBoptimize(model);
-  if (error)
-    failure(env);
+  optimize(model);
 
   // Write model to 'mip1.lp'
-  error = GRBwrite(model, cast(char*)"mip1.lp");
-  if (error)
-    failure(env);
+  write(model, "mip1.lp");
 
   // Capture solution information
-  error = GRBgetintattr(model, cast(char*)"Status", &optimstatus);
-  if (error)
-    failure(env);
-
-  error = GRBgetdblattr(model, cast(char*)"ObjVal", &objval);
-  if (error)
-    failure(env);
-
-  error = GRBgetdblattrarray(model, cast(char*)"X", 0, 3, cast(double*)sol);
-  if (error)
-    failure(env);
+  int optimstatus = getintattr(model, "Status");
+  double objval   = getdblattr(model, "ObjVal");
+  double[] sol    = getdblattrarray(model, "X", 3);
 
   writeln();
   writeln("Optimization complete");
-  if (optimstatus == GRB_OPTIMAL) {
-    printf("Optimal objective: %.4e\n", objval);
-    printf("  x=%.0f, y=%.0f, z=%.0f\n", sol[0], sol[1], sol[2]);
-  } else if (optimstatus == GRB_INF_OR_UNBD) {
-    printf("Model is infeasible or unbounded\n");
-  } else {
-    printf("Optimization was stopped early\n");
+
+  if (optimstatus == GRB_OPTIMAL)
+  {
+    writeln("Optimal objective: ", objval);
+    writeln("  x=", sol[0], ", y=", sol[1], ", z=", sol[2]);
+  }
+  else if (optimstatus == GRB_INF_OR_UNBD) {
+    writeln("Model is infeasible or unbounded");
+  }
+  else {
+    writeln("Optimization was stopped early");
   }
 }
