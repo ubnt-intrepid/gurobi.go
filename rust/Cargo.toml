@@ -5,6 +5,3 @@ authors = ["Yusuke Sasaki <y_sasaki@nuem.nagoya-u.ac.jp>"]
 
 [dependencies]
 libc = "0.2.7"
-
-[target.debug.gurobi]
-rustc-link-search = ["."]
