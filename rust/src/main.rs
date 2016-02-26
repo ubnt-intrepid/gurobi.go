@@ -2,7 +2,7 @@ extern crate libc;
 
 use std::ptr::null;
 use libc::{c_char, c_int, c_double};
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 
 enum GRBenv {}
 enum GRBmodel {}
@@ -94,7 +94,7 @@ extern "C" {
 
 
 fn as_c_char(s: &str) -> *const c_char {
-  s.to_string().as_ptr() as *const c_char
+  CString::new(s).unwrap().as_ptr()
 }
 
 pub struct Env {
@@ -359,8 +359,11 @@ fn main() {
   let numvars = model.get_int_attr("NumVars");
   assert!(numvars == 3);
 
-  // let xname = model.get_string_attr_element("VarName", 0);
-  // println!("x = {}", xname);
+  for i in 0..3 {
+    let name = model.get_string_attr_element("VarName", i);
+    let val = model.get_double_attr_element("X", i);
+    println!("{} = {}", name, val);
+  }
 
   let obj = model.get_double_attr("ObjVal");
   println!("Obj: {}", obj);
