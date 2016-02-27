@@ -25,6 +25,22 @@ public:
   ~Env() { ::GRBfreeenv(env); }
 };
 
+
+struct temp_constr {
+  std::vector<int>    ind;
+  std::vector<double> coeff;
+  char                sense;
+  double              rhs;
+public:
+  temp_constr(std::vector<int> ind, std::vector<double> coeff,
+              char sense, double rhs = 0.0)
+    : ind(ind), coeff(coeff), sense(sense), rhs(rhs)
+  {
+    assert(ind.size() == coeff.size());
+  }
+};
+
+
 class Model {
   GRBmodel* model = nullptr;
 
@@ -56,6 +72,21 @@ public:
     }
   }
 
+  void set_objective(std::vector<double> coeff, int sense)
+  {
+    set_double_attrs("Obj", coeff);
+    set_int_attr("ModelSense", sense);
+  }
+
+  void set_double_attrs(std::string const& attrname, std::vector<double> newvalues)
+  {
+    int ret = ::GRBsetdblattrarray(model, attrname.c_str(), 0, newvalues.size(),
+                                   newvalues.data());
+    if (ret) {
+      throw std::runtime_error("GRBsetintattr");
+    }
+  }
+
   template <typename VarType>
   void add_var(std::string const& name, VarType vtype, double obj = 0.0)
   {
@@ -66,15 +97,11 @@ public:
     }
   }
 
-  void add_constr(std::string const& name,
-                  std::vector<int> cind,
-                  std::vector<double> cval,
-                  char sense,
-                  double rhs)
+  void add_constr(std::string const& name, temp_constr constr)
   {
-    assert(cind.size() == cval.size());
-    int ret = ::GRBaddconstr(model, cind.size(), cind.data(), cval.data(),
-                             sense, rhs, name.c_str());
+    int ret = ::GRBaddconstr(model, constr.ind.size(), constr.ind.data(),
+                             constr.coeff.data(), constr.sense,
+                             constr.rhs, name.c_str());
     if (ret) {
       throw std::runtime_error("GRBaddconstr");
     }
@@ -141,6 +168,7 @@ public:
   constexpr char vtype() const { return 'I'; }
 };
 
+
 int main(int argc, char const* argv[])
 {
   using namespace std;
@@ -148,18 +176,17 @@ int main(int argc, char const* argv[])
   Env env("mip1.log");
   Model model(env);
 
-  model.add_var("x", binary{}, 1);
-  model.add_var("y", binary{}, 1);
-  model.add_var("z", binary{}, 2);
-  model.add_var("t", integer{-1000, 1000}, 2);
+  model.add_var("x", binary{});
+  model.add_var("y", binary{});
+  model.add_var("z", binary{});
+  model.add_var("t", integer{-1000, 1000});
   model.update();
 
-  model.add_constr("c0", {0, 1, 2}, {1, 2, 3}, '<', 4.0);
-  model.add_constr("c1", {0, 1}, {1, 2}, '>', 1.0);
-  model.add_constr("c2", {0, 1, 2, 3}, {1, 1, 1, -1}, '=', 0.0);
+  model.add_constr("c0", {{0, 1, 2},    {1, 2, 3},     '<', 4.0});
+  model.add_constr("c1", {{0, 1},       {1, 2},        '>', 1.0});
+  model.add_constr("c2", {{0, 1, 2, 3}, {1, 1, 1, -1}, '=', 0.0});
 
-  model.set_int_attr("ModelSense", -1);
-  // model.set_objective({ 1, 1, 2 }, -1);
+  model.set_objective({1, 1, 2, 2}, -1);
 
   model.optimize();
   for (int i = 0; i < 4; ++i) {
