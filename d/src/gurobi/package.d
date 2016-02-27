@@ -1,5 +1,5 @@
 module gurobi;
-public import gurobi.api_c;
+public import api_c;
 
 private
 {

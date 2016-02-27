@@ -1,0 +1,9 @@
+{
+  "name"         : "gurobi-d",
+  "description"  : "A minimal D application.",
+  "copyright"    : "Copyright © 2016, y_sasaki",
+  "authors"      : ["y_sasaki"],
+  "dependencies" : {
+  },
+  "libs": ["gurobi65"]
+}
