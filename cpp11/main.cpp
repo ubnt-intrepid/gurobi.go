@@ -25,24 +25,37 @@ public:
   ~Env() { ::GRBfreeenv(env); }
 };
 
+class Model;
+
+struct Var {
+  Model& model;
+  int index;
+public:
+  Var(Model& model, int index)
+    : model(model), index(index)
+  {
+  }
+};
+
 
 struct temp_constr {
-  std::vector<int>    ind;
+  std::vector<Var>    vars;
   std::vector<double> coeff;
   char                sense;
   double              rhs;
 public:
-  temp_constr(std::vector<int> ind, std::vector<double> coeff,
+  temp_constr(std::vector<Var> vars, std::vector<double> coeff,
               char sense, double rhs = 0.0)
-    : ind(ind), coeff(coeff), sense(sense), rhs(rhs)
+    : vars(vars), coeff(coeff), sense(sense), rhs(rhs)
   {
-    assert(ind.size() == coeff.size());
+    assert(vars.size() == coeff.size());
   }
 };
 
 
 class Model {
   GRBmodel* model = nullptr;
+  int varcount = 0;
 
 public:
   Model(Env& env, std::string const& modelname = "")
@@ -88,18 +101,24 @@ public:
   }
 
   template <typename VarType>
-  void add_var(std::string const& name, VarType vtype, double obj = 0.0)
+  Var add_var(std::string const& name, VarType vtype, double obj = 0.0)
   {
     int ret = ::GRBaddvar(model, 0, nullptr, nullptr, obj, vtype.lb(),
                           vtype.ub(), vtype.vtype(), name.c_str());
     if (ret) {
       throw std::runtime_error("GRBaddvar");
     }
+    return Var(*this, varcount++);
   }
 
   void add_constr(std::string const& name, temp_constr constr)
   {
-    int ret = ::GRBaddconstr(model, constr.ind.size(), constr.ind.data(),
+    std::vector<int> index(constr.vars.size());
+    for (int i = 0 ; i < constr.vars.size(); ++i) {
+      index[i] = constr.vars[i].index;
+    }
+
+    int ret = ::GRBaddconstr(model, index.size(), index.data(),
                              constr.coeff.data(), constr.sense,
                              constr.rhs, name.c_str());
     if (ret) {
@@ -154,11 +173,11 @@ public:
 };
 
 struct integer {
-  int _lb = -10000;
-  int _ub = 10000;
+  int _lb;
+  int _ub;
 
 public:
-  constexpr integer(int lb, int ub)
+  constexpr integer(int lb = -100000, int ub = 100000)
       : _lb(lb)
       , _ub(ub)
   {
@@ -176,15 +195,15 @@ int main(int argc, char const* argv[])
   Env env("mip1.log");
   Model model(env);
 
-  model.add_var("x", binary{});
-  model.add_var("y", binary{});
-  model.add_var("z", binary{});
-  model.add_var("t", integer{-1000, 1000});
+  auto x = model.add_var("x", binary{});
+  auto y = model.add_var("y", binary{});
+  auto z = model.add_var("z", binary{});
+  auto t = model.add_var("t", integer{});
   model.update();
 
-  model.add_constr("c0", {{0, 1, 2},    {1, 2, 3},     '<', 4.0});
-  model.add_constr("c1", {{0, 1},       {1, 2},        '>', 1.0});
-  model.add_constr("c2", {{0, 1, 2, 3}, {1, 1, 1, -1}, '=', 0.0});
+  model.add_constr("c0", {{x, y, z},    {1, 2, 3},     '<', 4.0});
+  model.add_constr("c1", {{x, y},       {1, 2},        '>', 1.0});
+  model.add_constr("c2", {{x, y, z, t}, {1, 1, 1, -1}, '=', 0.0});
 
   model.set_objective({1, 1, 2, 2}, -1);
 
