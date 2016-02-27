@@ -114,7 +114,8 @@ impl Env {
     Env { env: env }
   }
 
-  pub fn dispose(&mut self) {
+  // destructor
+  fn dispose(&mut self) {
     println!("[call GRBfreeenv]");
     unsafe { GRBfreeenv(&mut *self.env) };
   }
@@ -324,7 +325,32 @@ impl Model {
     }
   }
 
-  pub fn dispose(&mut self) {
+  pub fn show_info(&self) {
+    println!("---");
+
+    let modelname = self.get_string_attr("ModelName");
+    println!("modelname: {}", modelname);
+
+    let status = self.get_int_attr("Status");
+    println!("status: {}", status);
+
+    let numvars = self.get_int_attr("NumVars");
+    println!("vars:");
+    for i in 0..numvars {
+      let name = self.get_string_attr_element("VarName", i);
+      println!("  - vname: {}", name);
+
+      let val = self.get_double_attr_element("X", i);
+      println!("    value: {}", val);
+    }
+
+    let objval = self.get_double_attr("ObjVal");
+    println!("objval: {}", objval);
+
+    println!("...");
+  }
+
+  fn dispose(&mut self) {
     if !self.model.is_null() {
       println!("[call GRBfreemodel]");
       unsafe { GRBfreemodel(&mut *self.model) };
