@@ -66,7 +66,7 @@ public:
     GRBfreemodel(model);
   }
 
-  int getintattr(string attr)
+  int get_int_attr(string attr)
   {
     int val;
     int error = GRBgetintattr(model, cast(char*) attr, &val);
@@ -75,7 +75,7 @@ public:
     return val;
   }
 
-  double getdblattr(string attr)
+  double get_double_attr(string attr)
   {
     double val;
     int error = GRBgetdblattr(model, cast(char*) attr, &val);
@@ -84,37 +84,49 @@ public:
     return val;
   }
 
-  double[] getdblattrarray(string attr, int length)
+  double[] get_double_attrs(string attr, int length)
   {
     double[] val = new double[length];
-    int error = GRBgetdblattrarray(model, cast(char*) attr, 0, length, cast(double*) val);
+    int error = GRBgetdblattrarray(model,
+                                   cast(char*) attr,
+                                   0,
+                                   length,
+                                   cast(double*) val);
     if (error)
       failure();
     return val;
   }
 
-  void setintattr(string attr, int value)
+  void set_int_attr(string attr, int value)
   {
     int error = GRBsetintattr(model, cast(char*) attr, value);
     if (error)
       failure();
   }
 
-  void addvars(char[] vtype, double[] obj)
+  void add_vars(char[] vtype, double[] obj)
   in
   {
     assert(obj.length == vtype.length);
   }
   body
   {
-    int error = GRBaddvars(model, cast(int) obj.length, 0, cast(int*) null,
-      cast(int*) null, cast(double*) null, cast(double*) obj,
-      cast(double*) null, cast(double*) null, cast(char*) vtype, cast(char**) null);
+    int error = GRBaddvars(model,
+                           cast(int) obj.length,
+                           0,
+                           cast(int*) null,
+                           cast(int*) null,
+                           cast(double*) null,
+                           cast(double*) obj,
+                           cast(double*) null,
+                           cast(double*) null,
+                           cast(char*) vtype,
+                           cast(char**) null);
     if (error)
       failure();
   }
 
-  void addvars(char vtype, int length, double[] obj)
+  void add_vars(char vtype, int length, double[] obj)
   in
   {
     assert(obj.length == length);
@@ -123,19 +135,10 @@ public:
   {
     char[] vtypes = new char[length];
     vtypes[] = vtype;
-    addvars(vtypes, obj);
+    add_vars(vtypes, obj);
   }
 
-  void addvars(char vtype, int length)
-  {
-    char[] vtypes = new char[length];
-    double[] obj = new double[length];
-    vtypes[] = vtype;
-    obj[] = 0;
-    addvars(vtypes, obj);
-  }
-
-  void addconstr(int[] ind, double[] val, char sense, double rhs, string cname)
+  void add_constr(string cname, int[] ind, double[] val, char sense, double rhs)
   in
   {
     assert(ind.length == val.length);

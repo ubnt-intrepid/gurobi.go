@@ -4,53 +4,24 @@ import gurobi;
 
 void main()
 {
-  // Create environment
-  scope env = new Env("mip1.log");
-
-  // Create an empty model
+  scope env   = new Env("mip1.log");
   scope model = new Model(env, "mip1");
 
-  // Add variables
-  model.addvars(GRB_BINARY, 3, /*obj=*/ [1, 1, 2]);
-  //model.addvars(GRB_BINARY, 3);
-
-  // Change objective sense to maximization
-  model.setintattr(GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE);
-
-  // Integrate new variables
+  model.add_vars(GRB_BINARY, 3, /*obj=*/ [1, 1, 2]);
   model.update();
 
-  // First constraint: x + 2 y + 3 z <= 4
-  model.addconstr([0, 1, 2], [1, 2, 3], GRB_LESS_EQUAL, 4.0, "c0");
+  model.set_int_attr("ModelSense", -1);
 
-  // Second constraint: x + y >= 1
-  model.addconstr([0, 1], [1, 1], GRB_GREATER_EQUAL, 1.0, "c1");
+  model.add_constr("c0", [0, 1, 2], [1, 2, 3], '<', 4.0);
+  model.add_constr("c1", [0, 1], [1, 1], '>', 1.0);
 
-  // Optimize model
   model.optimize();
 
-  // Write model to 'mip1.lp'
+  const objval = model.get_double_attr(GRB_DBL_ATTR_OBJVAL);
+  const sol    = model.get_double_attrs(GRB_DBL_ATTR_X, 3);
+
+  writefln("Optimal objective: %6e", objval);
+  writefln("  x=%06e y=%06e z=%06e", sol[0], sol[1], sol[2]);
+
   model.write("mip1.lp");
-
-  // Capture solution information
-  int optimstatus = model.getintattr(GRB_INT_ATTR_STATUS);
-  double objval = model.getdblattr(GRB_DBL_ATTR_OBJVAL);
-  double[] sol = model.getdblattrarray(GRB_DBL_ATTR_X, 3);
-
-  writeln();
-  writeln("Optimization complete");
-
-  if (optimstatus == GRB_OPTIMAL)
-  {
-    writeln("Optimal objective: ", objval);
-    writeln("  x=", sol[0], ", y=", sol[1], ", z=", sol[2]);
-  }
-  else if (optimstatus == GRB_INF_OR_UNBD)
-  {
-    writeln("Model is infeasible or unbounded");
-  }
-  else
-  {
-    writeln("Optimization was stopped early");
-  }
 }
