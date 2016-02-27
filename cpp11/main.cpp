@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
+#include <functional>
 
 extern "C" {
 #include "gurobi_c.h"
@@ -65,6 +66,53 @@ public:
   }
 };
 
+class IntAttr {
+  char const* name;
+public:
+  constexpr IntAttr(char const* name)
+      : name(name)
+  {
+  }
+
+  constexpr operator char const*() const { return name; }
+
+  int get(GRBmodel* model, int& value) {
+    return ::GRBgetintattr(model, name, &value);
+  }
+
+  int set(GRBmodel* model, int newvalue) {
+    return ::GRBsetintattr(model, name, newvalue);
+  }
+
+  using value_type = int;
+};
+
+class DoubleAttr {
+  char const* name;
+public:
+  constexpr DoubleAttr(char const* name)
+      : name(name)
+  {
+  }
+
+  constexpr operator char const*() const { return name; }
+
+  int get(GRBmodel* model, double& value) {
+    return ::GRBgetdblattr(model, name, &value);
+  }
+
+  int set(GRBmodel* model, double newvalue) {
+    return ::GRBsetdblattr(model, name, newvalue);
+  }
+
+  using value_type = double;
+};
+
+namespace attr {
+static constexpr IntAttr ModelSense{"ModelSense"};
+static constexpr DoubleAttr ObjVal{"ObjVal"};
+static constexpr DoubleAttr X{"X"};
+} // namespace attr
 
 class Model {
   GRBmodel* model = nullptr;
@@ -100,15 +148,36 @@ public:
 
   void set_objective(std::vector<double> coeff, int sense)
   {
-    set_double_attrs("Obj", coeff);
-    set_int_attr("ModelSense", sense);
+    set_double("Obj", coeff);
+    set_int("ModelSense", sense);
   }
 
-  void set_double_attrs(std::string const& attrname,
-                        std::vector<double> newvalues)
+  template <typename Attr, typename T>
+  void set(Attr attr, T value)
   {
-    int ret = ::GRBsetdblattrarray(model, attrname.c_str(), 0, newvalues.size(),
-                                   newvalues.data());
+    int ret = attr.set(model, value);
+    if (ret) {
+      throw std::runtime_error("GRBset");
+    }
+  }
+
+  template <typename Attr, typename T = typename Attr::value_type>
+  T get(Attr attr)
+  {
+    T value;
+    int ret = attr.get(model, std::ref(value));
+    if (ret) {
+      throw std::runtime_error("GRBget");
+    }
+    return value;
+  }
+
+  void set_double(std::string const& attrname,
+                  std::vector<double> newvalues,
+                  int offset = 0)
+  {
+    int ret = ::GRBsetdblattrarray(model, attrname.c_str(), offset,
+                                   newvalues.size(), newvalues.data());
     if (ret) {
       throw std::runtime_error("GRBsetintattr");
     }
@@ -140,7 +209,7 @@ public:
     }
   }
 
-  double get_double_attr(std::string const& attrname)
+  double get_double(std::string const& attrname)
   {
     double value;
     int ret = ::GRBgetdblattr(model, attrname.c_str(), &value);
@@ -150,7 +219,7 @@ public:
     return value;
   }
 
-  double get_double_attr(std::string const& attrname, int index)
+  double get_double(std::string const& attrname, int index)
   {
     double value;
     int ret = ::GRBgetdblattrelement(model, attrname.c_str(), index, &value);
@@ -160,7 +229,7 @@ public:
     return value;
   }
 
-  std::string get_str_attr(std::string const& attrname, int index)
+  std::string get_str(std::string const& attrname, int index)
   {
     char* value;
     int ret = ::GRBgetstrattrelement(model, attrname.c_str(), index, &value);
@@ -170,7 +239,7 @@ public:
     return value;
   }
 
-  void set_int_attr(std::string const& attrname, int value)
+  void set_int(std::string const& attrname, int value)
   {
     int ret = ::GRBsetintattr(model, attrname.c_str(), value);
     if (ret) {
@@ -221,12 +290,13 @@ int main(int argc, char const* argv[])
   model.set_objective({1, 1, 2, 2}, -1);
 
   model.optimize();
+
   for (int i = 0; i < 4; ++i) {
-    auto vname = model.get_str_attr("VarName", i);
-    auto value = model.get_double_attr("X", i);
+    auto vname = model.get_str("VarName", i);
+    auto value = model.get_double("X", i);
     cout << vname << " = " << value << endl;
   }
 
-  double obj = model.get_double_attr("ObjVal");
+  double obj = model.get(attr::ObjVal);
   cout << "Obj = " << obj << endl;
 }
