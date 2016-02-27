@@ -1,5 +1,5 @@
 // $ g++ -std=c++11 main.cpp -lgurobi65 && ./a
-// vim: set ts=2 sw=2 et :
+// vim: set ts=2 sw=2 et foldmarker=[[[,]]] :
 
 #include <iostream>
 #include <string>
@@ -26,26 +26,27 @@ public:
 };
 
 class Model;
-
 struct Var {
   Model& model;
   int index;
+
 public:
   Var(Model& model, int index)
-    : model(model), index(index)
+      : model(model)
+      , index(index)
   {
   }
 };
 
-
 struct LinExpr {
-  std::vector<Var>    vars;
+  std::vector<Var> vars;
   std::vector<double> coeff;
-  double              offset;
+  double offset;
+
 public:
-  LinExpr(std::vector<Var> vars, std::vector<double> coeff,
-              double offset)
-    : vars(vars), coeff(coeff)
+  LinExpr(std::vector<Var> vars, std::vector<double> coeff, double offset)
+      : vars(vars)
+      , coeff(coeff)
       , offset(offset)
   {
     assert(vars.size() == coeff.size());
@@ -54,10 +55,11 @@ public:
 
 struct temp_constr {
   LinExpr expr;
-  char                sense;
+  char sense;
+
 public:
   temp_constr(LinExpr expr, char sense)
-    :expr(expr)
+      : expr(expr)
       , sense(sense)
   {
   }
@@ -66,7 +68,7 @@ public:
 
 class Model {
   GRBmodel* model = nullptr;
-  int varcount = 0;
+  int varcount    = 0;
 
 public:
   Model(Env& env, std::string const& modelname = "")
@@ -102,7 +104,8 @@ public:
     set_int_attr("ModelSense", sense);
   }
 
-  void set_double_attrs(std::string const& attrname, std::vector<double> newvalues)
+  void set_double_attrs(std::string const& attrname,
+                        std::vector<double> newvalues)
   {
     int ret = ::GRBsetdblattrarray(model, attrname.c_str(), 0, newvalues.size(),
                                    newvalues.data());
@@ -125,7 +128,7 @@ public:
   void add_constr(std::string const& name, temp_constr constr)
   {
     std::vector<int> index(constr.expr.vars.size());
-    for (int i = 0 ; i < constr.expr.vars.size(); ++i) {
+    for (int i = 0; i < constr.expr.vars.size(); ++i) {
       index[i] = constr.expr.vars[i].index;
     }
 
@@ -198,7 +201,6 @@ public:
   constexpr char vtype() const { return 'I'; }
 };
 
-
 int main(int argc, char const* argv[])
 {
   using namespace std;
@@ -212,9 +214,9 @@ int main(int argc, char const* argv[])
   auto t = model.add_var("t", integer{});
   model.update();
 
-  model.add_constr("c0", { {{x,y,z},   {1,2,3},    -4}, '<' });
-  model.add_constr("c1", { {{x,y},     {1,2},      -1}, '>' });
-  model.add_constr("c2", { {{x,y,z,t}, {1,1,1,-1},  0}, '=' });
+  model.add_constr("c0", {{{x, y, z}, {1, 2, 3}, -4}, '<'});
+  model.add_constr("c1", {{{x, y}, {1, 2}, -1}, '>'});
+  model.add_constr("c2", {{{x, y, z, t}, {1, 1, 1, -1}, 0}, '='});
 
   model.set_objective({1, 1, 2, 2}, -1);
 
