@@ -11,7 +11,6 @@ extern "C" {
 #include "gurobi_c.h"
 }
 
-
 namespace gurobi {
 
 class Env {
@@ -71,6 +70,7 @@ public:
 
 class IntAttr {
   char const* name;
+
 public:
   constexpr IntAttr(char const* name)
       : name(name)
@@ -79,11 +79,13 @@ public:
 
   constexpr operator char const*() const { return name; }
 
-  int get(GRBmodel* model, int& value) {
+  int get(GRBmodel* model, int& value)
+  {
     return ::GRBgetintattr(model, name, &value);
   }
 
-  int set(GRBmodel* model, int newvalue) {
+  int set(GRBmodel* model, int newvalue)
+  {
     return ::GRBsetintattr(model, name, newvalue);
   }
 
@@ -92,6 +94,7 @@ public:
 
 class DoubleAttr {
   char const* name;
+
 public:
   constexpr DoubleAttr(char const* name)
       : name(name)
@@ -100,11 +103,13 @@ public:
 
   constexpr operator char const*() const { return name; }
 
-  int get(GRBmodel* model, double& value) {
+  int get(GRBmodel* model, double& value)
+  {
     return ::GRBgetdblattr(model, name, &value);
   }
 
-  int set(GRBmodel* model, double newvalue) {
+  int set(GRBmodel* model, double newvalue)
+  {
     return ::GRBsetdblattr(model, name, newvalue);
   }
 
@@ -271,6 +276,6 @@ public:
   constexpr double lb() const { return _lb; }
   constexpr double ub() const { return _ub; }
   constexpr char vtype() const { return 'I'; }
-}; 
+};
 
 } // namespace gurobi;
