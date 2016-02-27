@@ -1,5 +1,7 @@
+extern crate libc;
+use self::libc::{c_char, c_int, c_double};
+
 use std::ptr::null;
-use libc::{c_char, c_int, c_double};
 use std::ffi::{CStr, CString};
 
 enum GRBenv {}
@@ -157,11 +159,11 @@ impl Model {
   }
 
   pub fn add_var(&mut self,
+                 varname: &str,
+                 vtype: char,
                  lb: f64,
                  ub: f64,
-                 obj: f64,
-                 vtype: char,
-                 varname: &str) {
+                 obj: f64) {
     println!("[call GRBaddvar]");
     let ret = unsafe {
       GRBaddvar(self.model,
@@ -182,11 +184,11 @@ impl Model {
   }
 
   pub fn add_constr(&mut self,
+                    constname: &str,
                     ind: Vec<i64>,
                     val: Vec<f64>,
-                    sense: char,
-                    rhs: f64,
-                    constname: &str) {
+                    offset: f64,
+                    sense: char) {
     assert!(ind.len() == val.len());
     let numnz = ind.len() as c_int;
     let cind = ind.iter().map(|&i| i as c_int).collect::<Vec<c_int>>();
@@ -197,7 +199,7 @@ impl Model {
                    &cind[0] as *const c_int,
                    &cval[0] as *const c_double,
                    sense as c_char,
-                   rhs,
+                   -offset,
                    as_c_char(constname))
     };
     if ret != 0 {
