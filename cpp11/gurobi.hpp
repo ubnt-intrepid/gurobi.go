@@ -278,4 +278,19 @@ public:
   constexpr char vtype() const { return 'I'; }
 };
 
+struct real {
+  double _lb;
+  double _ub;
+
+public:
+  constexpr real(double lb = -100000, double ub = 100000)
+      : _lb(lb)
+      , _ub(ub)
+  {
+  }
+  constexpr double lb() const { return _lb; }
+  constexpr double ub() const { return _ub; }
+  constexpr char vtype() const { return 'C'; }
+};
+
 } // namespace gurobi;
