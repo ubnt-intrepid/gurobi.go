@@ -2,6 +2,9 @@
 // dmd -c gurobi.d
 module api_c;
 
+public import errors;
+private import std.typecons : Tuple;
+
 extern (C)
 {
   struct _GRBmodel;
@@ -18,11 +21,6 @@ alias GRBmodel = _GRBmodel;
 alias GRBenv = _GRBenv;
 alias GRBsvec = _GRBsvec;
 
-// Version numbers
-enum GRB_VERSION_MAJOR = 6;
-enum GRB_VERSION_MINOR = 5;
-enum GRB_VERSION_TECHNICAL = 0;
-
 // Default and max priority for Compute Server jobs
 enum DEFAULT_CS_PRIORITY = 0;
 enum MAX_CS_PRIORITY = 100;
@@ -31,24 +29,32 @@ enum MAX_CS_PRIORITY = 100;
 enum DEFAULT_CS_PORT = 61000;
 
 // Constraint senses
-enum GRB_LESS_EQUAL = '<';
-enum GRB_GREATER_EQUAL = '>';
-enum GRB_EQUAL = '=';
+enum ConstrSense : char {
+  LESS_EQUAL    = '<',
+  GREATER_EQUAL = '>',
+  EQUAL         = '=',
+}
 
 // Variable types
-enum GRB_CONTINUOUS = 'C';
-enum GRB_BINARY = 'B';
-enum GRB_INTEGER = 'I';
-enum GRB_SEMICONT = 'S';
-enum GRB_SEMIINT = 'N';
+enum VarType : char {
+  CONTINUOUS = 'C',
+  BINARY     = 'B',
+  INTEGER    = 'I',
+  SEMICONT   = 'S',
+  SEMIINT    = 'N',
+}
 
 // Objective sense
-enum GRB_MINIMIZE = 1;
-enum GRB_MAXIMIZE = -1;
+enum ModelSense : int {
+  MINIMIZE = 1,
+  MAXIMIZE = -1,
+}
 
 // SOS types
-enum GRB_SOS_TYPE1 = 1;
-enum GRB_SOS_TYPE2 = 2;
+enum SOSType : int {
+  GRB_SOS_TYPE1 = 1,
+  GRB_SOS_TYPE2 = 2,
+}
 
 // Numeric enumants
 enum GRB_INFINITY = 1e100;
@@ -60,31 +66,37 @@ enum GRB_MAX_NAMELEN = 255;
 enum GRB_MAX_STRLEN = 512;
 enum GRB_MAX_CONCURRENT = 64;
 
-enum GRB_FEASRELAX_LINEAR = 0;
-enum GRB_FEASRELAX_QUADRATIC = 1;
-enum GRB_FEASRELAX_CARDINALITY = 2;
+enum FeasRelaxType : int {
+  LINEAR      = 0,
+  QUADRATIC   = 1,
+  CARDINALITY = 2,
+}
 
 // Model status codes (after call to GRBoptimize())
-enum GRB_LOADED = 1;
-enum GRB_OPTIMAL = 2;
-enum GRB_INFEASIBLE = 3;
-enum GRB_INF_OR_UNBD = 4;
-enum GRB_UNBOUNDED = 5;
-enum GRB_CUTOFF = 6;
-enum GRB_ITERATION_LIMIT = 7;
-enum GRB_NODE_LIMIT = 8;
-enum GRB_TIME_LIMIT = 9;
-enum GRB_SOLUTION_LIMIT = 10;
-enum GRB_INTERRUPTED = 11;
-enum GRB_NUMERIC = 12;
-enum GRB_SUBOPTIMAL = 13;
-enum GRB_INPROGRESS = 14;
+enum Status : int {
+  LOADED          = 1,
+  OPTIMAL         = 2,
+  INFEASIBLE      = 3,
+  INF_OR_UNBD     = 4,
+  UNBOUNDED       = 5,
+  CUTOFF          = 6,
+  ITERATION_LIMIT = 7,
+  NODE_LIMIT      = 8,
+  TIME_LIMIT      = 9,
+  SOLUTION_LIMIT  = 10,
+  INTERRUPTED     = 11,
+  NUMERIC         = 12,
+  SUBOPTIMAL      = 13,
+  INPROGRESS      = 14,
+}
 
 // Basis status info
-enum GRB_BASIC = 0;
-enum GRB_NONBASIC_LOWER = -1;
-enum GRB_NONBASIC_UPPER = -2;
-enum GRB_SUPERBASIC = -3;
+enum BasisStatusInfo : int {
+  BASIC          = 0,
+  NONBASIC_LOWER = -1,
+  NONBASIC_UPPER = -2,
+  SUPERBASIC     = -3,
+}
 
 // All *CUTS parameters
 enum GRB_CUTS_AUTO = -1;
@@ -109,108 +121,101 @@ enum GRB_BARHOMOGENEOUS_AUTO = -1;
 enum GRB_BARHOMOGENEOUS_OFF = 0;
 enum GRB_BARHOMOGENEOUS_ON = 1;
 
-enum GRB_MIPFOCUS_BALANCED = 0;
-enum GRB_MIPFOCUS_FEASIBILITY = 1;
-enum GRB_MIPFOCUS_OPTIMALITY = 2;
-enum GRB_MIPFOCUS_BESTBOUND = 3;
+enum MIPFocus : int {
+  BALANCED    = 0,
+  FEASIBILITY = 1,
+  OPTIMALITY  = 2,
+  BESTBOUND   = 3,
+}
 
 enum GRB_BARORDER_AUTOMATIC = -1;
 enum GRB_BARORDER_AMD = 0;
 enum GRB_BARORDER_NESTEDDISSECTION = 1;
 
-enum GRB_SIMPLEXPRICING_AUTO = -1;
-enum GRB_SIMPLEXPRICING_PARTIAL = 0;
-enum GRB_SIMPLEXPRICING_STEEPEST_EDGE = 1;
-enum GRB_SIMPLEXPRICING_DEVEX = 2;
-enum GRB_SIMPLEXPRICING_STEEPEST_QUICK = 3;
+enum SimplexPricing : int {
+  AUTO           = -1,
+  PARTIAL        = 0,
+  STEEPEST_EDGE  = 1,
+  DEVEX          = 2,
+  STEEPEST_QUICK = 3,
+}
 
-enum GRB_VARBRANCH_AUTO = -1;
-enum GRB_VARBRANCH_PSEUDO_REDUCED = 0;
-enum GRB_VARBRANCH_PSEUDO_SHADOW = 1;
-enum GRB_VARBRANCH_MAX_INFEAS = 2;
-enum GRB_VARBRANCH_STRONG = 3;
-
-// Error codes
-enum GRB_ERROR_OUT_OF_MEMORY = 10001;
-enum GRB_ERROR_NULL_ARGUMENT = 10002;
-enum GRB_ERROR_INVALID_ARGUMENT = 10003;
-enum GRB_ERROR_UNKNOWN_ATTRIBUTE = 10004;
-enum GRB_ERROR_DATA_NOT_AVAILABLE = 10005;
-enum GRB_ERROR_INDEX_OUT_OF_RANGE = 10006;
-enum GRB_ERROR_UNKNOWN_PARAMETER = 10007;
-enum GRB_ERROR_VALUE_OUT_OF_RANGE = 10008;
-enum GRB_ERROR_NO_LICENSE = 10009;
-enum GRB_ERROR_SIZE_LIMIT_EXCEEDED = 10010;
-enum GRB_ERROR_CALLBACK = 10011;
-enum GRB_ERROR_FILE_READ = 10012;
-enum GRB_ERROR_FILE_WRITE = 10013;
-enum GRB_ERROR_NUMERIC = 10014;
-enum GRB_ERROR_IIS_NOT_INFEASIBLE = 10015;
-enum GRB_ERROR_NOT_FOR_MIP = 10016;
-enum GRB_ERROR_OPTIMIZATION_IN_PROGRESS = 10017;
-enum GRB_ERROR_DUPLICATES = 10018;
-enum GRB_ERROR_NODEFILE = 10019;
-enum GRB_ERROR_Q_NOT_PSD = 10020;
-enum GRB_ERROR_QCP_EQUALITY_CONSTRAINT = 10021;
-enum GRB_ERROR_NETWORK = 10022;
-enum GRB_ERROR_JOB_REJECTED = 10023;
-enum GRB_ERROR_NOT_SUPPORTED = 10024;
-enum GRB_ERROR_EXCEED_2B_NONZEROS = 10025;
-enum GRB_ERROR_INVALID_PIECEWISE_OBJ = 10026;
-enum GRB_ERROR_UPDATEMODE_CHANGE = 10027;
+enum VarBranch : int {
+  AUTO           = -1,
+  PSEUDO_REDUCED = 0,
+  PSEUDO_SHADOW  = 1,
+  MAX_INFEAS     = 2,
+  STRONG         = 3,
+}
 
 // For callback
-enum GRB_CB_POLLING = 0;
-enum GRB_CB_PRESOLVE = 1;
-enum GRB_CB_SIMPLEX = 2;
-enum GRB_CB_MIP = 3;
-enum GRB_CB_MIPSOL = 4;
-enum GRB_CB_MIPNODE = 5;
-enum GRB_CB_MESSAGE = 6;
-enum GRB_CB_BARRIER = 7;
+enum CallbackWhere : int {
+  POLLING  = 0,
+  PRESOLVE = 1,
+  SIMPLEX  = 2,
+  MIP      = 3,
+  MIPSOL   = 4,
+  MIPNODE  = 5,
+  MESSAGE  = 6,
+  BARRIER  = 7,
+}
 
 // Supported names for callback
-enum GRB_CB_PRE_COLDEL = 1000;
-enum GRB_CB_PRE_ROWDEL = 1001;
-enum GRB_CB_PRE_SENCHG = 1002;
-enum GRB_CB_PRE_BNDCHG = 1003;
-enum GRB_CB_PRE_COECHG = 1004;
-enum GRB_CB_SPX_ITRCNT = 2000;
-enum GRB_CB_SPX_OBJVAL = 2001;
-enum GRB_CB_SPX_PRIMINF = 2002;
-enum GRB_CB_SPX_DUALINF = 2003;
-enum GRB_CB_SPX_ISPERT = 2004;
-enum GRB_CB_MIP_OBJBST = 3000;
-enum GRB_CB_MIP_OBJBND = 3001;
-enum GRB_CB_MIP_NODCNT = 3002;
-enum GRB_CB_MIP_SOLCNT = 3003;
-enum GRB_CB_MIP_CUTCNT = 3004;
-enum GRB_CB_MIP_NODLFT = 3005;
-enum GRB_CB_MIP_ITRCNT = 3006;
-enum GRB_CB_MIP_OBJBNDC = 3007;
-enum GRB_CB_MIPSOL_SOL = 4001;
-enum GRB_CB_MIPSOL_OBJ = 4002;
-enum GRB_CB_MIPSOL_OBJBST = 4003;
-enum GRB_CB_MIPSOL_OBJBND = 4004;
-enum GRB_CB_MIPSOL_NODCNT = 4005;
-enum GRB_CB_MIPSOL_SOLCNT = 4006;
-enum GRB_CB_MIPSOL_OBJBNDC = 4007;
-enum GRB_CB_MIPNODE_STATUS = 5001;
-enum GRB_CB_MIPNODE_REL = 5002;
-enum GRB_CB_MIPNODE_OBJBST = 5003;
-enum GRB_CB_MIPNODE_OBJBND = 5004;
-enum GRB_CB_MIPNODE_NODCNT = 5005;
-enum GRB_CB_MIPNODE_SOLCNT = 5006;
-enum GRB_CB_MIPNODE_BRVAR = 5007;
-enum GRB_CB_MIPNODE_OBJBNDC = 5008;
-enum GRB_CB_MSG_STRING = 6001;
-enum GRB_CB_RUNTIME = 6002;
-enum GRB_CB_BARRIER_ITRCNT = 7001;
-enum GRB_CB_BARRIER_PRIMOBJ = 7002;
-enum GRB_CB_BARRIER_DUALOBJ = 7003;
-enum GRB_CB_BARRIER_PRIMINF = 7004;
-enum GRB_CB_BARRIER_DUALINF = 7005;
-enum GRB_CB_BARRIER_COMPL = 7006;
+enum CallbackWhat : int {
+  PRE_COLDEL      = 1000,
+  PRE_ROWDEL      = 1001,
+  PRE_SENCHG      = 1002,
+  PRE_BNDCHG      = 1003,
+  PRE_COECHG      = 1004,
+  SPX_ITRCNT      = 2000,
+  SPX_OBJVAL      = 2001,
+  SPX_PRIMINF     = 2002,
+  SPX_DUALINF     = 2003,
+  SPX_ISPERT      = 2004,
+  MIP_OBJBST      = 3000,
+  MIP_OBJBND      = 3001,
+  MIP_NODCNT      = 3002,
+  MIP_SOLCNT      = 3003,
+  MIP_CUTCNT      = 3004,
+  MIP_NODLFT      = 3005,
+  MIP_ITRCNT      = 3006,
+  MIP_OBJBNDC     = 3007,
+  MIPSOL_SOL      = 4001,
+  MIPSOL_OBJ      = 4002,
+  MIPSOL_OBJBST   = 4003,
+  MIPSOL_OBJBND   = 4004,
+  MIPSOL_NODCNT   = 4005,
+  MIPSOL_SOLCNT   = 4006,
+  MIPSOL_OBJBNDC  = 4007,
+  MIPNODE_STATUS  = 5001,
+  MIPNODE_REL     = 5002,
+  MIPNODE_OBJBST  = 5003,
+  MIPNODE_OBJBND  = 5004,
+  MIPNODE_NODCNT  = 5005,
+  MIPNODE_SOLCNT  = 5006,
+  MIPNODE_BRVAR   = 5007,
+  MIPNODE_OBJBNDC = 5008,
+  MSG_STRING      = 6001,
+  RUNTIME         = 6002,
+  BARRIER_ITRCNT  = 7001,
+  BARRIER_PRIMOBJ = 7002,
+  BARRIER_DUALOBJ = 7003,
+  BARRIER_PRIMINF = 7004,
+  BARRIER_DUALINF = 7005,
+  BARRIER_COMPL   = 7006,
+}
+
+enum IntAttr : string {
+  ModelSense = "ModelSense",
+}
+
+enum DoubleAttr : string {
+  ObjVal = "ObjVal",
+}
+
+enum DoubleArrayAttr : Tuple!(string, string) {
+  X = Tuple!(string, string)("X", "NumVars"),
+}
 
 // Model attributes
 enum GRB_INT_ATTR_NUMCONSTRS = "NumConstrs"; // # of constraints
