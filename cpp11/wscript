@@ -1,0 +1,25 @@
+# vim: set ft=python ts=4 sw=4 et :
+# coding: utf-8
+
+
+TOP = '.'
+OUT = 'build'
+
+import os
+
+def options(opt):
+    opt.load('compiler_cxx')
+
+def configure(conf):
+    conf.load('compiler_cxx')
+    conf.env.append_unique('CXXFLAGS', ['-std=c++11', '-Wall'])
+
+    gurobi_home = os.environ.get('GUROBI_HOME', None)
+    if gurobi_home:
+        conf.env.INCLUDES += [os.path.join(gurobi_home, 'include')]
+        conf.env.LIBPATH  += [os.path.join(gurobi_home, 'lib')]
+        conf.env.LIB      += ['gurobi65']
+
+def build(bld):
+    bld(source = 'main.cpp', target = 'gurobi_cpp11',
+        features = 'cxx cxxprogram')

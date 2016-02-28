@@ -1,2 +1,5 @@
 *.exe
 *.o
+.lock-waf*
+build/
+waf-1.8.*/
