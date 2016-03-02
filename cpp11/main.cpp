@@ -4,6 +4,31 @@
 #include <iostream>
 #include "gurobi.hpp"
 
+namespace gurobi {
+
+temp_constr operator<=(LinExpr expr, double rhs)
+{
+  temp_constr constr{expr, '<'};
+  constr.expr.offset -= rhs;
+  return constr;
+}
+
+temp_constr operator>=(LinExpr expr, double rhs)
+{
+  temp_constr constr{expr, '>'};
+  constr.expr.offset -= rhs;
+  return constr;
+}
+
+temp_constr operator==(LinExpr expr, double rhs)
+{
+  temp_constr constr{expr, '='};
+  constr.expr.offset -= rhs;
+  return constr;
+}
+
+} // namespace gurobi
+
 int main(int argc, char const* argv[])
 {
   using namespace std;
@@ -18,9 +43,9 @@ int main(int argc, char const* argv[])
   auto t = model.add_var("t", real{0});
   model.update();
 
-  model.add_constr("c0", {{{x, y, z}, {1, 2, 3}, -4}, '<'});
-  model.add_constr("c1", {{{x, y}, {1, 2}, -1}, '>'});
-  model.add_constr("c2", {{{x, y, z, t}, {1, 1.2, 2.5, -1}, 0}, '='});
+  model.add_constr("c0", LinExpr{{x, y, z}, {1, 2, 3}} <= 4);
+  model.add_constr("c1", LinExpr{{x, y}, {1, 2}} >= 1);
+  model.add_constr("c2", LinExpr{{x, y, z, t}, {1, 1.2, 2.5, -1}} == 0);
 
   model.set_objective({1, 1, 2, 2}, -1);
 

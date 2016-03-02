@@ -47,7 +47,7 @@ struct LinExpr {
   double offset;
 
 public:
-  LinExpr(std::vector<Var> vars, std::vector<double> coeff, double offset)
+  LinExpr(std::vector<Var> vars, std::vector<double> coeff, double offset = 0.0)
       : vars(vars)
       , coeff(coeff)
       , offset(offset)
