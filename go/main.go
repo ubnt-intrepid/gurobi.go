@@ -67,6 +67,18 @@ func (model *Model) setDoubleAttrElement(attr string, ind int32, value float64) 
 	return int(err)
 }
 
+func (model *Model) getIntAttr(attrname string) (int32, int) {
+  var attr int32;
+  err := C.GRBgetintattr(model.model, C.CString(attrname), (*C.int)(&attr))
+  return attr, int(err)
+}
+
+func (model *Model) getDoubleAttr(attrname string) (float64, int) {
+  var attr float64;
+  err := C.GRBgetdblattr(model.model, C.CString(attrname), (*C.double)(&attr))
+  return attr, int(err)
+}
+
 func (model *Model) update() int {
 	err := C.GRBupdatemodel(model.model)
 	return int(err)
@@ -127,9 +139,6 @@ func main() {
 	}
 
 	// First constraint
-	ind := [3]int32{0, 1, 2}
-	val := [3]float64{1, 2, 3}
-
 	err = model.addConstr([]int32{0, 1, 2}, []float64{1, 2, 3}, C.GRB_GREATER_EQUAL, 4.0, "c0")
 	if err != 0 {
 		env.error()
@@ -137,9 +146,6 @@ func main() {
 	}
 
 	// Second constraint
-	ind = [3]int32{0, 1, 2}
-	val = [3]float64{1, 1, 1}
-
 	err = model.addConstr([]int32{0, 1, 2}, []float64{1, 1, 1}, C.GRB_GREATER_EQUAL, 1.0, "c1")
 	if err != 0 {
 		env.error()
@@ -161,15 +167,13 @@ func main() {
 	}
 
 	// Capture solution information
-	var optimstatus int32
-	err = C.GRBgetintattr(model, C.CString(C.GRB_INT_ATTR_STATUS), (*C.int)(&optimstatus))
+  optimstatus, err := model.getIntAttr(C.GRB_INT_ATTR_STATUS)
 	if err != 0 {
 		env.error()
 		return
 	}
 
-	var objval float64
-	err = C.GRBgetdblattr(model, C.CString(C.GRB_DBL_ATTR_OBJVAL), (*C.double)(&objval))
+	objval, err := model.getDoubleAttr(C.GRB_DBL_ATTR_OBJVAL)
 	if err != 0 {
 		env.error()
 		return
