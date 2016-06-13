@@ -184,12 +184,16 @@ impl Model {
     self.varcnt += 1;
   }
 
+  pub fn add_bvar(&mut self, varname: &str, obj: f64) {
+    self.add_var(varname, 'B', 0.0, 1.0, obj)
+  }
+
   pub fn add_constr(&mut self,
-                    constname: &str,
                     ind: Vec<i64>,
                     val: Vec<f64>,
-                    offset: f64,
-                    sense: char) {
+                    sense: char,
+                    rhs: f64,
+                    constname: &str) {
     assert!(ind.len() == val.len());
     let numnz = ind.len() as c_int;
     let cind = ind.iter().map(|&i| i as c_int).collect::<Vec<c_int>>();
@@ -200,7 +204,7 @@ impl Model {
                    &cind[0] as *const c_int,
                    &cval[0] as *const c_double,
                    sense as c_char,
-                   -offset,
+                   rhs,
                    as_c_char(constname))
     };
     if ret != 0 {
@@ -210,9 +214,8 @@ impl Model {
 
   pub fn get_int_attr(&self, attrname: &str) -> i64 {
     let mut value = 0 as c_int;
-    let ret = unsafe {
-      GRBgetintattr(self.model, as_c_char(attrname), &mut value)
-    };
+    let ret =
+      unsafe { GRBgetintattr(self.model, as_c_char(attrname), &mut value) };
     if ret != 0 {
       panic!("An error was occurred. Error code is: {}", ret);
     }
@@ -221,9 +224,8 @@ impl Model {
 
   pub fn get_double_attr(&self, attrname: &str) -> f64 {
     let mut value = 0 as c_double;
-    let ret = unsafe {
-      GRBgetdblattr(self.model, as_c_char(attrname), &mut value)
-    };
+    let ret =
+      unsafe { GRBgetdblattr(self.model, as_c_char(attrname), &mut value) };
     if ret != 0 {
       panic!("An error was occurred. Error code is: {}", ret);
     }
@@ -232,9 +234,8 @@ impl Model {
 
   pub fn get_string_attr(&self, attrname: &str) -> &str {
     let mut value = 0 as *mut c_char;
-    let ret = unsafe {
-      GRBgetstrattr(self.model, as_c_char(attrname), &mut value)
-    };
+    let ret =
+      unsafe { GRBgetstrattr(self.model, as_c_char(attrname), &mut value) };
     if ret != 0 {
       panic!("An error was occurred. Error code is: {}", ret);
     }
@@ -255,8 +256,8 @@ impl Model {
                                first: i64,
                                newvalues: &Vec<f64>) {
     let newval = newvalues.iter()
-                          .map(|&i| i as c_double)
-                          .collect::<Vec<c_double>>();
+      .map(|&i| i as c_double)
+      .collect::<Vec<c_double>>();
     let ret = unsafe {
       GRBsetdblattrarray(self.model,
                          as_c_char(attrname),
