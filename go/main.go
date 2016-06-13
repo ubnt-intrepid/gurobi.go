@@ -9,10 +9,9 @@ type Env struct {
 	env *C.GRBenv
 }
 
-func newEnv(logfilename string) (Env, int) {
-	var env *C.GRBenv = nil
-	err := C.GRBloadenv(&env, C.CString(logfilename))
-	return Env{env: env}, int(err)
+func newEnv(logfilename string) (env Env, err int) {
+	err = int(C.GRBloadenv(&env.env, C.CString(logfilename)))
+	return
 }
 
 func (env *Env) free() {
@@ -44,8 +43,42 @@ func (model *Model) addVars(numvars int32) int {
 	return int(err)
 }
 
+func (model *Model) addQPTerms(qrow []int32, qcol []int32, qval []float64) int {
+	numterms := len(qrow)
+	if numterms > len(qcol) {
+		numterms = len(qcol)
+	}
+	if numterms > len(qval) {
+		numterms = len(qval)
+	}
+
+	err := C.GRBaddqpterms(model.model, (C.int)(numterms), (*C.int)(&qrow[0]), (*C.int)(&qcol[0]), (*C.double)(&qval[0]))
+	return int(err)
+}
+
+func (model *Model) addConstr(ind []int32, val []float64, sense int8, rhs float64, constrname string) int {
+	numterms := len(ind)
+	err := C.GRBaddconstr(model.model, (C.int)(numterms), (*C.int)(&ind[0]), (*C.double)(&val[0]), (C.char)(sense), (C.double)(rhs), C.CString(constrname))
+	return int(err)
+}
+
+func (model *Model) setDoubleAttrElement(attr string, ind int32, value float64) int {
+	err := C.GRBsetdblattrelement(model.model, C.CString(attr), (C.int)(ind), (C.double)(value))
+	return int(err)
+}
+
 func (model *Model) update() int {
 	err := C.GRBupdatemodel(model.model)
+	return int(err)
+}
+
+func (model *Model) optimize() int {
+	err := C.GRBoptimize(model.model)
+	return int(err)
+}
+
+func (model *Model) write(filename string) int {
+	err := C.GRBwrite(model.model, C.CString(filename))
 	return int(err)
 }
 
@@ -80,18 +113,14 @@ func main() {
 	}
 
 	// Quadratic objective terms
-	qcol := [5]int32{0, 0, 1, 1, 2}
-	qrow := [5]int32{0, 1, 1, 2, 2}
-	qval := [5]float64{1, 1, 1, 1, 1}
-
-	err = C.GRBaddqpterms(model, 5, (*C.int)(&qrow[0]), (*C.int)(&qcol[0]), (*C.double)(&qval[0]))
+	err = model.addQPTerms([]int32{0, 1, 1, 2, 2}, []int32{0, 0, 1, 1, 2}, []float64{1, 1, 1, 1, 1})
 	if err != 0 {
 		env.error()
 		return
 	}
 
 	// Linear objective term
-	err = C.GRBsetdblattrelement(model, C.CString(C.GRB_DBL_ATTR_OBJ), 0, 2.0)
+	err = model.setDoubleAttrElement(C.GRB_DBL_ATTR_OBJ, 0, 2.0)
 	if err != 0 {
 		env.error()
 		return
@@ -101,7 +130,7 @@ func main() {
 	ind := [3]int32{0, 1, 2}
 	val := [3]float64{1, 2, 3}
 
-	err = C.GRBaddconstr(model, 3, (*C.int)(&ind[0]), (*C.double)(&val[0]), C.GRB_GREATER_EQUAL, 4.0, C.CString("c0"))
+	err = model.addConstr([]int32{0, 1, 2}, []float64{1, 2, 3}, C.GRB_GREATER_EQUAL, 4.0, "c0")
 	if err != 0 {
 		env.error()
 		return
@@ -111,21 +140,21 @@ func main() {
 	ind = [3]int32{0, 1, 2}
 	val = [3]float64{1, 1, 1}
 
-	err = C.GRBaddconstr(model, 2, (*C.int)(&ind[0]), (*C.double)(&val[0]), C.GRB_GREATER_EQUAL, 1.0, C.CString("c1"))
+	err = model.addConstr([]int32{0, 1, 2}, []float64{1, 1, 1}, C.GRB_GREATER_EQUAL, 1.0, "c1")
 	if err != 0 {
 		env.error()
 		return
 	}
 
 	// Optimize model
-	err = C.GRBoptimize(model)
+	err = model.optimize()
 	if err != 0 {
 		env.error()
 		return
 	}
 
 	// Write model to 'qp.lp'.
-	err = C.GRBwrite(model, C.CString("qp.lp"))
+	err = model.write("qp.lp")
 	if err != 0 {
 		env.error()
 		return
