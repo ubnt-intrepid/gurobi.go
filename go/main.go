@@ -88,4 +88,35 @@ func main() {
 		fmt.Printf("ERROR: %s\n", C.GRBgeterrormsg(env))
 		return
 	}
+
+	// Capture solution information
+	var optimstatus int32;
+	err = C.GRBgetintattr(model, C.CString(C.GRB_INT_ATTR_STATUS), (*C.int)(&optimstatus));
+	if err != 0 {
+		fmt.Printf("ERROR: %s\n", C.GRBgeterrormsg(env))
+		return
+	}
+
+	var objval float64;
+	err = C.GRBgetdblattr(model, C.CString(C.GRB_DBL_ATTR_OBJVAL), (*C.double)(&objval));
+	if err != 0 {
+		fmt.Printf("ERROR: %s\n", C.GRBgeterrormsg(env))
+		return
+	}
+
+	var sol [3] float64;
+	err = C.GRBgetdblattrarray(model, C.CString(C.GRB_DBL_ATTR_X), 0, 3, (*C.double)(&sol[0]));
+	if err != 0 {
+		fmt.Printf("ERROR: %s\n", C.GRBgeterrormsg(env))
+		return
+	}
+
+	fmt.Printf("\nOptimization complete\n");
+	if optimstatus == C.GRB_OPTIMAL {
+		fmt.Printf("Optimal objective: %.4e\n", objval);
+	} else if optimstatus == C.GRB_INF_OR_UNBD {
+		fmt.Printf("Model is infeasible or unbounded\n");
+	} else {
+		fmt.Printf("Optimization was stopped early\n");
+  }
 }
