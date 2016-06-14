@@ -7,7 +7,8 @@ use std::ffi::{CStr, CString};
 enum GRBenv {}
 enum GRBmodel {}
 
-#[link(name = "gurobi56", kind="dylib")]
+#[link(name = "gurobi65", kind="static")]
+// #[link(name = "gurobi56", kind="dylib")]
 extern "C" {
   fn GRBgeterrormsg(env: *mut GRBenv) -> *mut c_char;
   fn GRBgetenv(model: *mut GRBmodel) -> *mut GRBenv;
