@@ -2,28 +2,36 @@ package gurobi
 
 // #include <gurobi_c.h>
 import "C"
-import "fmt"
+import "errors"
 
 type Env struct {
 	env *C.GRBenv
 }
 
-func NewEnv(logfilename string) (env Env, err int) {
-	err = int(C.GRBloadenv(&env.env, C.CString(logfilename)))
-	return
+// create a new environment.
+func NewEnv(logfilename string) (Env, error) {
+	var env *C.GRBenv = nil
+	errcode := int(C.GRBloadenv(&env, C.CString(logfilename)))
+	if errcode != 0 {
+		return Env{nil}, errors.New("Cannot create environment.")
+	}
+
+	return Env{env}, nil
 }
 
+// free environment.
 func (env *Env) Free() {
-	C.GRBfreeenv(env.env)
-	env.env = nil
+	if env.env != nil {
+		C.GRBfreeenv(env.env)
+		env.env = nil
+	}
 }
 
-func (env *Env) Error() {
-	fmt.Printf("ERROR: %s\n", C.GRBgeterrormsg(env.env))
-}
-
-func (env *Env) NewModel(modelname string) (Model, int) {
-	var model *C.GRBmodel = nil
-	err := C.GRBnewmodel(env.env, &model, C.CString(modelname), 0, nil, nil, nil, nil, nil)
-	return Model{model: model}, int(err)
+// make an error object from error code.
+func (env *Env) makeError(errcode C.int) error {
+	if errcode != 0 {
+		return errors.New(C.GoString(C.GRBgeterrormsg(env.env)))
+	} else {
+		return nil
+	}
 }

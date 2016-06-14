@@ -6,91 +6,84 @@ import "fmt"
 func main() {
 	// Create environment.
 	env, err := gurobi.NewEnv("qp.log")
-	if err != 0 {
+	if err != nil {
+		err.Error()
 		return
 	}
 	defer env.Free()
 
 	// Create an empty model.
 	model, err := env.NewModel("qp")
-	if err != 0 {
-		env.Error()
+	if err != nil {
+		err.Error()
 		return
 	}
 	defer model.Free()
 
 	// Add varibles
-	err = model.AddVars(3)
-	if err != 0 {
-		env.Error()
+	if err := model.AddVars(3); err != nil {
+		err.Error()
 		return
 	}
 
 	// Integrate new variables.
-	err = model.Update()
-	if err != 0 {
-		env.Error()
+	if err := model.Update(); err != nil {
+		err.Error()
 		return
 	}
 
 	// Quadratic objective terms
-	err = model.AddQPTerms([]int32{0, 1, 1, 2, 2}, []int32{0, 0, 1, 1, 2}, []float64{1, 1, 1, 1, 1})
-	if err != 0 {
-		env.Error()
+	if err := model.AddQPTerms([]int32{0, 1, 1, 2, 2}, []int32{0, 0, 1, 1, 2}, []float64{1, 1, 1, 1, 1}); err != nil {
+		err.Error()
 		return
 	}
 
 	// Linear objective term
-	err = model.SetDoubleAttrElement(gurobi.DBL_ATTR_OBJ, 0, 2.0)
-	if err != 0 {
-		env.Error()
+	if err := model.SetDoubleAttrElement(gurobi.DBL_ATTR_OBJ, 0, 2.0); err != nil {
+		err.Error()
 		return
 	}
 
 	// First constraint
-	err = model.AddConstr([]int32{0, 1, 2}, []float64{1, 2, 3}, '>', 4.0, "c0")
-	if err != 0 {
-		env.Error()
+	if err := model.AddConstr([]int32{0, 1, 2}, []float64{1, 2, 3}, '>', 4.0, "c0"); err != nil {
+		err.Error()
 		return
 	}
 
 	// Second constraint
-	err = model.AddConstr([]int32{0, 1, 2}, []float64{1, 1, 1}, '>', 1.0, "c1")
-	if err != 0 {
-		env.Error()
+	if err := model.AddConstr([]int32{0, 1, 2}, []float64{1, 1, 1}, '>', 1.0, "c1"); err != nil {
+		err.Error()
 		return
 	}
 
 	// Optimize model
-	err = model.Optimize()
-	if err != 0 {
-		env.Error()
+	if err := model.Optimize(); err != nil {
+		err.Error()
 		return
 	}
 
 	// Write model to 'qp.lp'.
-	err = model.Write("qp.lp")
-	if err != 0 {
-		env.Error()
+	if err := model.Write("qp.lp"); err != nil {
+		err.Error()
 		return
 	}
 
 	// Capture solution information
 	optimstatus, err := model.GetIntAttr(gurobi.INT_ATTR_STATUS)
-	if err != 0 {
-		env.Error()
+	if err != nil {
+		err.Error()
 		return
 	}
 
 	objval, err := model.GetDoubleAttr(gurobi.DBL_ATTR_OBJVAL)
-	if err != 0 {
-		env.Error()
+	if err != nil {
+		err.Error()
 		return
 	}
 
 	sol, err := model.GetDoubleAttrArray(gurobi.DBL_ATTR_X, 3)
-	if err != 0 {
-		env.Error()
+	if err != nil {
+		err.Error()
 		return
 	}
 
