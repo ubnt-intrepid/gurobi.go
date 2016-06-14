@@ -9,14 +9,14 @@ type Env struct {
 }
 
 // create a new environment.
-func NewEnv(logfilename string) (Env, error) {
+func NewEnv(logfilename string) (*Env, error) {
 	var env *C.GRBenv = nil
 	errcode := int(C.GRBloadenv(&env, C.CString(logfilename)))
 	if errcode != 0 {
-		return Env{nil}, errors.New("Cannot create environment.")
+		return nil, errors.New("Cannot create environment.")
 	}
 
-	return Env{env}, nil
+	return &Env{env}, nil
 }
 
 // free environment.

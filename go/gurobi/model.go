@@ -9,11 +9,11 @@ type Model struct {
 }
 
 // create a new model from the environment.
-func (env *Env) NewModel(modelname string) (Model, error) {
+func (env *Env) NewModel(modelname string) (*Model, error) {
 	var model *C.GRBmodel = nil
 	errcode := C.GRBnewmodel(env.env, &model, C.CString(modelname), 0, nil, nil, nil, nil, nil)
 
-	return Model{model: model, env: env}, env.makeError(errcode)
+	return &Model{model: model, env: env}, env.makeError(errcode)
 }
 
 // free the model

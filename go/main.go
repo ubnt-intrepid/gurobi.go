@@ -7,18 +7,22 @@ func main() {
 	// Create environment.
 	env, err := gurobi.NewEnv("qp.log")
 	if err != nil {
-		err.Error()
-		return
+		panic(err.Error())
 	}
-	defer env.Free()
+	defer func() {
+		env.Free()
+		env = nil
+	}()
 
 	// Create an empty model.
 	model, err := env.NewModel("qp")
 	if err != nil {
-		err.Error()
-		return
+		panic(err.Error())
 	}
-	defer model.Free()
+	defer func() {
+		model.Free()
+		model = nil
+	}()
 
 	// Add varibles
 	if err := model.AddVars(3); err != nil {
