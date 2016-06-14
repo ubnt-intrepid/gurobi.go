@@ -1,20 +1,14 @@
+Gurobi Interfaces
+=================
+
 Unofficial Gurobi Interfaces for Modern Programming Languages
-=============================================================
+(inspired from https://github.com/JuliaOpt/Gurobi.jl)
 
-## What is this?
+## Supported languages (WIP)
 
-Gurobiが標準で提供している言語以外を使用したい場合，およびGurobiの提供するAPIが使いにくい場合に使用できる非公式API（予定）
-
-いろいろ試してみたかっただけ
-
-
-## Supported languages (plan)
-
-* C++11 (for MinGW, MSYS2)
-* D
-* Rust
-* (Haskell)
-* ...
+* Dlang (LDC2 1.0.0)
+* Rust (1.9.0, MSVC ABI)
+* Golang (1.6.2)
 
 ## LICENSE
 See [LICENSE](LICENSE).
