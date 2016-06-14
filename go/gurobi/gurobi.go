@@ -1,7 +1,7 @@
 package gurobi
 
 // #include <gurobi_c.h>
-// #cgo LDFLAGS: -lgurobi56
+// #cgo LDFLAGS: -lgurobi65
 import "C"
 
 const DBL_ATTR_OBJ = C.GRB_DBL_ATTR_OBJ

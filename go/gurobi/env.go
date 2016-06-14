@@ -25,16 +25,3 @@ func (env *Env) Free() {
 		C.GRBfreeenv(env.env)
 	}
 }
-
-// make an error object from error code.
-func (env *Env) makeError(errcode C.int) error {
-	if env == nil {
-		return errors.New("This environment has not initialized yet.")
-	}
-
-	if errcode != 0 {
-		return errors.New(C.GoString(C.GRBgeterrormsg(env.env)))
-	} else {
-		return nil
-	}
-}
