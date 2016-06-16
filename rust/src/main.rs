@@ -1,9 +1,8 @@
 mod gurobi;
 use gurobi::{Env, Model};
 
-fn main() {
-  let env = Env::new("model.log");
-  let mut model = Model::new(&env, "mip1");
+fn create_model(env: &mut Env) -> Result<Model, String> {
+  let mut model = try!(env.newModel("mip1"));
 
   model.add_bvar("x", 0.0);
   model.add_bvar("y", 0.0);
@@ -15,6 +14,12 @@ fn main() {
 
   model.set_objective(vec![1., 1., 2.], -1);
 
+  Ok(model)
+}
+
+fn main() {
+  let mut env = Env::new("model.log").unwrap();
+  let mut model = create_model(&mut env).unwrap();
   model.optimize();
   model.show_info();
 }

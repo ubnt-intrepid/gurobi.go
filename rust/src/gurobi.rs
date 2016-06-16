@@ -115,10 +115,34 @@ pub struct Env {
 }
 
 impl Env {
-  pub fn new(logfilename: &str) -> Env {
+  pub fn new(logfilename: &str) -> Result<Env, String> {
     let mut env = 0 as *mut GRBenv;
-    gurobi_call!(GRBloadenv, &mut env, as_c_char(logfilename));
-    Env { env: env }
+    match gurobi_call!(GRBloadenv, &mut env, as_c_char(logfilename)) {
+      Ok(_) => Ok(Env { env: env }),
+      Err(err) => Err(err),
+    }
+  }
+
+  pub fn newModel(&mut self, modelname: &str) -> Result<Model, String> {
+    let mut model = 0 as *mut GRBmodel;
+    match gurobi_call!(GRBnewmodel,
+                 self.env,
+                  &mut model,
+                  as_c_char(modelname),
+                  0,
+                  null(),
+                  null(),
+                  null(),
+                  null(),
+                  null()) {
+      Ok(_) => {
+        Ok(Model {
+          model: model,
+          varcnt: 0,
+        })
+      }
+      Err(err) => Err(err),
+    }
   }
 
   // destructor
@@ -140,32 +164,14 @@ pub struct Model {
 }
 
 impl Model {
-  pub fn new(env: &Env, modelname: &str) -> Model {
-    let mut model = 0 as *mut GRBmodel;
-    gurobi_call!(GRBnewmodel,
-                 env.env,
-                  &mut model,
-                  as_c_char(modelname),
-                  0,
-                  null(),
-                  null(),
-                  null(),
-                  null(),
-                  null());
-
-    Model {
-      model: model,
-      varcnt: 0,
-    }
-  }
-
   pub fn add_var(&mut self,
                  varname: &str,
                  vtype: char,
                  lb: f64,
                  ub: f64,
-                 obj: f64) {
-    gurobi_call!(GRBaddvar,
+                 obj: f64)
+                 -> Result<&mut Self, String> {
+    match gurobi_call!(GRBaddvar,
                 self.model,
                 0,
                 null(),
@@ -174,11 +180,19 @@ impl Model {
                 lb,
                 ub,
                 vtype as c_char,
-                as_c_char(varname));
-    self.varcnt += 1;
+                as_c_char(varname)) {
+      Ok(_) => {
+        self.varcnt += 1;
+        Ok(self)
+      }
+      Err(err) => Err(err),
+    }
   }
 
-  pub fn add_bvar(&mut self, varname: &str, obj: f64) {
+  pub fn add_bvar(&mut self,
+                  varname: &str,
+                  obj: f64)
+                  -> Result<&mut Self, String> {
     self.add_var(varname, 'B', 0.0, 1.0, obj)
   }
 
@@ -187,19 +201,25 @@ impl Model {
                     val: Vec<f64>,
                     sense: char,
                     rhs: f64,
-                    constname: &str) {
-    assert!(ind.len() == val.len());
+                    constname: &str)
+                    -> Result<&mut Self, String> {
+    if ind.len() != val.len() {
+      return Err("Index length wrong.".to_string());
+    }
     let numnz = ind.len() as c_int;
     let cind = ind.iter().map(|&i| i as c_int).collect::<Vec<c_int>>();
     let cval = val.iter().map(|&i| i as c_double).collect::<Vec<c_double>>();
-    gurobi_call!(GRBaddconstr,
+    match gurobi_call!(GRBaddconstr,
                 self.model,
                    numnz,
                    &cind[0] as *const c_int,
                    &cval[0] as *const c_double,
                    sense as c_char,
                    rhs,
-                   as_c_char(constname));
+                   as_c_char(constname)) {
+      Ok(_) => Ok(self),
+      Err(err) => Err(err),
+    }
   }
 
   pub fn get_int_attr(&self, attrname: &str) -> i64 {
@@ -221,7 +241,8 @@ impl Model {
   }
 
   pub fn set_int_attr(&mut self, attrname: &str, newvalue: i64) {
-    gurobi_call!(GRBsetintattr, self.model, as_c_char(attrname), newvalue as c_int);
+    let newvalue_ = newvalue as c_int;
+    gurobi_call!(GRBsetintattr, self.model, as_c_char(attrname), newvalue_);
   }
 
   pub fn set_double_attr_array(&mut self,
