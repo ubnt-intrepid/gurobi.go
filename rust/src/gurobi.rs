@@ -93,6 +93,18 @@ extern "C" {
                         -> c_int;
 }
 
+macro_rules! gurobi_call(
+  ($func:ident, $($arg:expr),*) => (
+    {
+      println!("[calling {}]", stringify!($func));
+      let ret = unsafe { $func( $($arg),* ) };
+      match ret {
+        0 => Ok(0),
+        _ => Err(format!("An error was occurred. Error code is: {}", ret)),
+      }
+    }
+  )
+);
 
 fn as_c_char(s: &str) -> *const c_char {
   CString::new(s).unwrap().as_ptr()
@@ -105,20 +117,13 @@ pub struct Env {
 impl Env {
   pub fn new(logfilename: &str) -> Env {
     let mut env = 0 as *mut GRBenv;
-
-    println!("[call GRBloadenv]");
-    let ret = unsafe { GRBloadenv(&mut env, as_c_char(logfilename)) };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
-
+    gurobi_call!(GRBloadenv, &mut env, as_c_char(logfilename));
     Env { env: env }
   }
 
   // destructor
   fn dispose(&mut self) {
-    println!("[call GRBfreeenv]");
-    unsafe { GRBfreeenv(&mut *self.env) };
+    gurobi_call!(GRBfreeenv, &mut *self.env);
   }
 }
 
@@ -137,10 +142,8 @@ pub struct Model {
 impl Model {
   pub fn new(env: &Env, modelname: &str) -> Model {
     let mut model = 0 as *mut GRBmodel;
-
-    println!("[call GRBnewmodel]");
-    let ret = unsafe {
-      GRBnewmodel(env.env,
+    gurobi_call!(GRBnewmodel,
+                 env.env,
                   &mut model,
                   as_c_char(modelname),
                   0,
@@ -148,11 +151,7 @@ impl Model {
                   null(),
                   null(),
                   null(),
-                  null())
-    };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+                  null());
 
     Model {
       model: model,
@@ -166,9 +165,8 @@ impl Model {
                  lb: f64,
                  ub: f64,
                  obj: f64) {
-    println!("[call GRBaddvar]");
-    let ret = unsafe {
-      GRBaddvar(self.model,
+    gurobi_call!(GRBaddvar,
+                self.model,
                 0,
                 null(),
                 null(),
@@ -176,12 +174,7 @@ impl Model {
                 lb,
                 ub,
                 vtype as c_char,
-                as_c_char(varname))
-    };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
-
+                as_c_char(varname));
     self.varcnt += 1;
   }
 
@@ -199,57 +192,36 @@ impl Model {
     let numnz = ind.len() as c_int;
     let cind = ind.iter().map(|&i| i as c_int).collect::<Vec<c_int>>();
     let cval = val.iter().map(|&i| i as c_double).collect::<Vec<c_double>>();
-    let ret = unsafe {
-      GRBaddconstr(self.model,
+    gurobi_call!(GRBaddconstr,
+                self.model,
                    numnz,
                    &cind[0] as *const c_int,
                    &cval[0] as *const c_double,
                    sense as c_char,
                    rhs,
-                   as_c_char(constname))
-    };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+                   as_c_char(constname));
   }
 
   pub fn get_int_attr(&self, attrname: &str) -> i64 {
     let mut value = 0 as c_int;
-    let ret =
-      unsafe { GRBgetintattr(self.model, as_c_char(attrname), &mut value) };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+    gurobi_call!(GRBgetintattr, self.model, as_c_char(attrname), &mut value);
     value as i64
   }
 
   pub fn get_double_attr(&self, attrname: &str) -> f64 {
     let mut value = 0 as c_double;
-    let ret =
-      unsafe { GRBgetdblattr(self.model, as_c_char(attrname), &mut value) };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+    gurobi_call!(GRBgetdblattr, self.model, as_c_char(attrname), &mut value);
     value as f64
   }
 
   pub fn get_string_attr(&self, attrname: &str) -> &str {
     let mut value = 0 as *mut c_char;
-    let ret =
-      unsafe { GRBgetstrattr(self.model, as_c_char(attrname), &mut value) };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+    gurobi_call!(GRBgetstrattr, self.model, as_c_char(attrname), &mut value);
     unsafe { CStr::from_ptr(value).to_str().unwrap() }
   }
 
   pub fn set_int_attr(&mut self, attrname: &str, newvalue: i64) {
-    let ret = unsafe {
-      GRBsetintattr(self.model, as_c_char(attrname), newvalue as c_int)
-    };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+    gurobi_call!(GRBsetintattr, self.model, as_c_char(attrname), newvalue as c_int);
   }
 
   pub fn set_double_attr_array(&mut self,
@@ -259,50 +231,28 @@ impl Model {
     let newval = newvalues.iter()
       .map(|&i| i as c_double)
       .collect::<Vec<c_double>>();
-    let ret = unsafe {
-      GRBsetdblattrarray(self.model,
+    gurobi_call!(GRBsetdblattrarray, self.model,
                          as_c_char(attrname),
                          first as c_int,
                          newval.len() as c_int,
-                         &newval[0] as *const c_double)
-    };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+                         &newval[0] as *const c_double);
   }
 
   pub fn get_double_attr_element(&self, attrname: &str, element: i64) -> f64 {
     let mut value = 0 as c_double;
-    let ret = unsafe {
-      GRBgetdblattrelement(self.model,
+    gurobi_call!(GRBgetdblattrelement, self.model,
                            as_c_char(attrname),
                            element as c_int,
-                           &mut value)
-    };
-    if ret != 0 {
-      let msg = unsafe {
-        let env = GRBgetenv(self.model);
-        assert!(env != 0 as *mut GRBenv);
-        CStr::from_ptr(GRBgeterrormsg(env)).to_str().unwrap()
-      };
-      panic!("An error was occurred. Error code is: {0}, message: {1}",
-             ret,
-             msg);
-    }
+                           &mut value);
     value as f64
   }
 
   pub fn get_string_attr_element(&self, attrname: &str, element: i64) -> &str {
     let mut value = 0 as *mut c_char;
-    let ret = unsafe {
-      GRBgetstrattrelement(self.model,
+    gurobi_call!(GRBgetstrattrelement,self.model,
                            as_c_char(attrname),
                            element as c_int,
-                           &mut value)
-    };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+                           &mut value);
     unsafe { CStr::from_ptr(value).to_str().unwrap() }
   }
 
@@ -312,19 +262,11 @@ impl Model {
   }
 
   pub fn update(&mut self) {
-    println!("[call GRBupdatemodel]");
-    let ret = unsafe { GRBupdatemodel(self.model) };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+    gurobi_call!(GRBupdatemodel, self.model);
   }
 
   pub fn optimize(&mut self) {
-    println!("[call GRBoptimize]");
-    let ret = unsafe { GRBoptimize(self.model) };
-    if ret != 0 {
-      panic!("An error was occurred. Error code is: {}", ret);
-    }
+    gurobi_call!(GRBoptimize, self.model);
   }
 
   pub fn show_info(&self) {
@@ -354,8 +296,7 @@ impl Model {
 
   fn dispose(&mut self) {
     if !self.model.is_null() {
-      println!("[call GRBfreemodel]");
-      unsafe { GRBfreemodel(&mut *self.model) };
+      gurobi_call!(GRBfreemodel, &mut *self.model);
     }
     self.model = 0 as *mut GRBmodel;
   }
