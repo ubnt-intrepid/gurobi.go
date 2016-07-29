@@ -1,4 +1,0 @@
-*.log
-Cargo.lock
-target/
-*.bk
