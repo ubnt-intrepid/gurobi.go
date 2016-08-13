@@ -1,14 +1,11 @@
-Gurobi Interfaces
-=================
+# Gurobi Interfaces for Golang
 
-Unofficial Gurobi Interfaces for Modern Programming Languages
+Unofficial Gurobi Interfaces for Golang.
+
 (inspired from https://github.com/JuliaOpt/Gurobi.jl)
 
-## Supported languages (WIP)
-
-* Dlang (LDC2 1.0.0)
-* Rust (1.9.0, MSVC ABI)
-* Golang (1.6.2)
+## Usage
+Works in progress...
 
 ## LICENSE
 See [LICENSE](LICENSE).
