@@ -19,7 +19,7 @@ func main() {
 	defer model.Free()
 
 	// Add varibles
-	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "x", []*gurobi.Constr{}, []float64{})
+	x, err := model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "x", []*gurobi.Constr{}, []float64{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -43,7 +43,7 @@ func main() {
 	}
 
 	// Linear objective term
-	if err := model.SetDoubleAttrElement(gurobi.DBL_ATTR_OBJ, 0, 2.0); err != nil {
+	if err := x.SetDouble(gurobi.DBL_ATTR_OBJ, 2.0); err != nil {
 		panic(err.Error())
 	}
 

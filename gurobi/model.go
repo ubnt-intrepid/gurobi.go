@@ -217,7 +217,23 @@ func (model *Model) GetDoubleAttrArray(attrname string, numvars int) ([]float64,
 	return value, nil
 }
 
-func (model *Model) SetDoubleAttrElement(attr string, ind int32, value float64) error {
+//
+func (model *Model) getDoubleAttrElement(attr string, ind int32) (float64, error) {
+	if model == nil {
+		return 0.0, errors.New("")
+	}
+
+	value := (C.double)(0)
+	err := C.GRBgetdblattrelement(model.model, C.CString(attr), (C.int)(ind), (*C.double)(&value))
+	if err != 0 {
+		return 0.0, model.makeError(err)
+	}
+
+	return float64(value), nil
+}
+
+//
+func (model *Model) setDoubleAttrElement(attr string, ind int32, value float64) error {
 	if model == nil {
 		return errors.New("")
 	}
