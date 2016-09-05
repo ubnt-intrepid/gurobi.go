@@ -1,6 +1,6 @@
 package main
 
-import "./gurobi"
+import "../gurobi"
 import "fmt"
 
 func main() {
@@ -9,23 +9,26 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	defer func() {
-		env.Free()
-		env = nil
-	}()
+	defer env.Free()
 
 	// Create an empty model.
 	model, err := gurobi.NewModel("qp", env)
 	if err != nil {
 		panic(err.Error())
 	}
-	defer func() {
-		model.Free()
-		model = nil
-	}()
+	defer model.Free()
 
 	// Add varibles
-	if err := model.AddVars(3); err != nil {
+	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "x", nil, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "y", nil, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "z", nil, nil)
+	if err != nil {
 		panic(err.Error())
 	}
 
