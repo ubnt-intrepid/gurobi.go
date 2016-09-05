@@ -15,7 +15,7 @@ func main() {
 	}()
 
 	// Create an empty model.
-	model, err := env.NewModel("qp")
+	model, err := gurobi.NewModel("qp", env)
 	if err != nil {
 		panic(err.Error())
 	}

@@ -6,11 +6,11 @@ import "errors"
 
 type Model struct {
 	model *C.GRBmodel
-	env   *Env
+	env   Env
 }
 
 // create a new model from the environment.
-func (env *Env) NewModel(modelname string) (*Model, error) {
+func NewModel(modelname string, env *Env) (*Model, error) {
 	if env == nil {
 		return nil, errors.New("This environment is not created yet.")
 	}
@@ -21,7 +21,12 @@ func (env *Env) NewModel(modelname string) (*Model, error) {
 		return nil, env.makeError(errcode)
 	}
 
-	return &Model{model: model, env: env}, nil
+	newenv := C.GRBgetenv(model)
+	if newenv == nil {
+		return nil, errors.New("Failed retrieve the environment")
+	}
+
+	return &Model{model: model, env: Env{newenv}}, nil
 }
 
 // free the model
