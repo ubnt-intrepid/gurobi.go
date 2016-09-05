@@ -58,7 +58,14 @@ func (model *Model) AddVar(vtype int8, obj float64, lb float64, ub float64, name
 		ind[i] = c.idx
 	}
 
-	err := C.GRBaddvar(model.model, (C.int)(len(constrs)), (*C.int)(&ind[0]), (*C.double)(&columns[0]), (C.double)(obj), (C.double)(lb), (C.double)(ub), (C.char)(vtype), C.CString(name))
+	pind := (*C.int)(nil)
+	pval := (*C.double)(nil)
+	if len(ind) > 0 {
+		pind = (*C.int)(&ind[0])
+		pval = (*C.double)(&columns[0])
+	}
+
+	err := C.GRBaddvar(model.model, (C.int)(len(constrs)), pind, pval, (C.double)(obj), (C.double)(lb), (C.double)(ub), (C.char)(vtype), C.CString(name))
 	if err != 0 {
 		return nil, model.makeError(err)
 	}

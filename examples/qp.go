@@ -19,15 +19,15 @@ func main() {
 	defer model.Free()
 
 	// Add varibles
-	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "x", nil, nil)
+	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "x", []*gurobi.Constr{}, []float64{})
 	if err != nil {
 		panic(err.Error())
 	}
-	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "y", nil, nil)
+	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "y", []*gurobi.Constr{}, []float64{})
 	if err != nil {
 		panic(err.Error())
 	}
-	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "z", nil, nil)
+	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "z", []*gurobi.Constr{}, []float64{})
 	if err != nil {
 		panic(err.Error())
 	}
