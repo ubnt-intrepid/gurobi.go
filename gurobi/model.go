@@ -4,9 +4,12 @@ package gurobi
 import "C"
 import "errors"
 
+// Gurobi model object
 type Model struct {
-	model *C.GRBmodel
-	env   Env
+	model   *C.GRBmodel
+	env     Env
+	vars    []Var
+	constrs []Constr
 }
 
 // create a new model from the environment.
@@ -35,7 +38,37 @@ func (model *Model) Free() {
 		return
 	}
 	C.GRBfreemodel(model.model)
+}
 
+// create a variable to the model
+func (model *Model) AddVar(vtype int8, obj float64, lb float64, ub float64, name string, constrs []*Constr, columns []float64) (*Var, error) {
+	if model == nil {
+		return nil, errors.New("model is not initialized")
+	}
+
+	if len(constrs) != len(columns) {
+		return nil, errors.New("either the length of constrs or columns are wrong")
+	}
+
+	ind := make([]int32, len(constrs), 0)
+	for i, c := range constrs {
+		if c.idx < 0 {
+			return nil, errors.New("Invalid index in constrs")
+		}
+		ind[i] = c.idx
+	}
+
+	err := C.GRBaddvar(model.model, (C.int)(len(constrs)), (*C.int)(&ind[0]), (*C.double)(&columns[0]), (C.double)(obj), (C.double)(lb), (C.double)(ub), (C.char)(vtype), C.CString(name))
+	if err != 0 {
+		return nil, model.makeError(err)
+	}
+
+	if err := model.Update(); err != nil {
+		return nil, err
+	}
+
+	model.vars = append(model.vars, Var{model, int32(len(model.vars))})
+	return &model.vars[len(model.vars)-1], nil
 }
 
 func (model *Model) AddVars(numvars int32) error {
@@ -72,6 +105,7 @@ func (model *Model) AddQPTerms(qrow []int32, qcol []int32, qval []float64) error
 	return nil
 }
 
+// add a constraint into the model.
 func (model *Model) AddConstr(ind []int32, val []float64, sense int8, rhs float64, constrname string) error {
 	if model == nil {
 		return errors.New("")
