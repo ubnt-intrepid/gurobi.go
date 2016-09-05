@@ -71,17 +71,63 @@ func (model *Model) AddVar(vtype int8, obj float64, lb float64, ub float64, name
 	return &model.vars[len(model.vars)-1], nil
 }
 
-func (model *Model) AddVars(numvars int32) error {
+func (model *Model) AddVars(vtype []int8, obj []float64, lb []float64, ub []float64, name []string, constrs [][]*Constr, columns [][]float64) ([]*Var, error) {
 	if model == nil {
-		return errors.New("")
+		return nil, errors.New("")
 	}
 
-	err := C.GRBaddvars(model.model, (C.int)(numvars), 0, nil, nil, nil, nil, nil, nil, nil, nil)
+	if len(vtype) != len(obj) || len(obj) != len(lb) || len(lb) != len(ub) || len(ub) != len(name) || len(name) != len(constrs) || len(constrs) != len(columns) {
+		return nil, errors.New("")
+	}
+
+	vname := make([](*C.char), len(vtype), 0)
+	for i, n := range name {
+		vname[i] = C.CString(n)
+	}
+
+	numnz := 0
+	for _, constr := range constrs {
+		numnz += len(constr)
+	}
+
+	beg := make([]int32, len(constrs), 0)
+	ind := make([]int32, numnz, 0)
+	val := make([]float64, numnz, 0)
+	k := 0
+	for i := 0; i < len(constrs); i++ {
+		if len(constrs[i]) != len(columns[i]) {
+			return nil, errors.New("")
+		}
+		beg[i] = int32(k)
+
+		for j := 0; j < len(constrs[i]); j++ {
+			idx := constrs[i][j].idx
+			if idx < 0 {
+				return nil, errors.New("")
+			}
+			ind[k+j] = idx
+			val[k+j] = columns[i][j]
+		}
+
+		k += len(constrs[i])
+	}
+
+	err := C.GRBaddvars(model.model, (C.int)(len(vtype)), (C.int)(numnz), (*C.int)(&beg[0]), (*C.int)(&ind[0]), (*C.double)(&val[0]), (*C.double)(&obj[0]), (*C.double)(&lb[0]), (*C.double)(&ub[0]), (*C.char)(&vtype[0]), (**C.char)(&vname[0]))
 	if err != 0 {
-		return model.makeError(err)
+		return nil, model.makeError(err)
 	}
 
-	return nil
+	if err := model.Update(); err != nil {
+		return nil, err
+	}
+
+	vars := make([]*Var, len(vtype), 0)
+	xcols := len(model.vars)
+	for i := xcols; i < xcols+len(vtype); i++ {
+		model.vars = append(model.vars, Var{model, int32(i)})
+		vars[i] = &model.vars[len(model.vars)-1]
+	}
+	return vars, nil
 }
 
 func (model *Model) AddQPTerms(qrow []int32, qcol []int32, qval []float64) error {
