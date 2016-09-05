@@ -29,7 +29,7 @@ func (model *Model) Free() {
 	if model == nil {
 		return
 	}
-		C.GRBfreemodel(model.model)
+	C.GRBfreemodel(model.model)
 
 }
 

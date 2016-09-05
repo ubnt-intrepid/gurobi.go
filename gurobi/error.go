@@ -10,7 +10,7 @@ type Error struct {
 }
 
 func (err Error) Error() string {
-  return err.message
+	return err.message
 }
 
 // make an error object from error code.
@@ -27,5 +27,5 @@ func (env *Env) makeError(errcode C.int) error {
 }
 
 func (model *Model) makeError(errcode C.int) error {
-  return model.env.makeError(errcode)  
+	return model.env.makeError(errcode)
 }
