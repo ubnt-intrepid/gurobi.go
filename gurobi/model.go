@@ -199,8 +199,89 @@ func (model *Model) AddConstr(vars []*Var, val []float64, sense int8, rhs float6
 	return &model.constrs[len(model.constrs)-1], nil
 }
 
+func (model *Model) AddConstrs(vars [][]*Var, val [][]float64, sense []int8, rhs []float64, constrname []string) ([]*Constr, error) {
+	if model == nil {
+		return nil, errors.New("")
+	}
+
+	if len(vars) != len(val)  || len(val) != len(sense) || len(sense) != len(rhs) || len(rhs) != len(constrname) {
+		return nil, errors.New("")
+	}
+
+	numnz := 0
+	for _, v := range vars {
+		numnz += len(v)
+	}
+
+	beg := make([]int32, len(constrname))
+	ind := make([]int32, numnz)
+	_val := make([]float64, numnz)
+	k := 0
+	for i := 0; i < len(vars); i++ {
+		if len(vars[i]) != len(val[i]) {
+			return nil, errors.New("")
+		}
+
+		for j := 0; j < len(vars[i]); j++ {
+			idx := vars[i][j].idx
+			if idx < 0 {
+				return nil, errors.New("")
+			}
+			ind[k+j] = idx
+			_val[k+j] = val[i][j]
+		}
+
+		beg[i] = int32(k)
+		k += len(vars[i])
+	}
+
+	name := make([](*C.char), len(constrname))
+	for i, n := range constrname {
+		name[i] = C.CString(n)
+	}
+
+	pbeg := (*C.int)(nil)
+	pind := (*C.int)(nil)
+	pval := (*C.double)(nil)
+	if len(beg) > 0 {
+		pbeg = (*C.int)(&beg[0])
+		pind = (*C.int)(&ind[0])
+		pval = (*C.double)(&_val[0])
+	}
+
+	psense := (*C.char)(nil)
+	prhs := (*C.double)(nil)
+	pname := (**C.char)(nil)
+	if len(constrname) > 0 {
+		psense = (*C.char)(&sense[0])
+		prhs = (*C.double)(&rhs[0])
+		pname = (**C.char)(&name[0])
+	}
+
+	err := C.GRBaddconstrs(model.model, C.int(len(constrname)), C.int(numnz), pbeg, pind, pval, psense, prhs, pname)
+	if err != 0 {
+		return nil, model.makeError(err)
+	}
+
+	if err := model.Update(); err != nil {
+		return nil, err
+	}
+
+	constrs := make([]*Constr, len(constrname))
+	xrows := len(model.constrs)
+	for i := xrows; i < xrows+len(constrname); i++ {
+		model.constrs = append(model.constrs, Constr{model, int32(i)})
+		constrs[i] = &model.constrs[len(model.constrs)-1]
+	}
+	return constrs, nil
+}
+
+
 // SetObjective ...
 func (model *Model) SetObjective(expr *QuadExpr, sense int32) error {
+	if err := C.GRBdelq(model.model); err != 0 {
+		return model.makeError(err)
+	}
 	if err := model.addQPTerms(expr.qrow, expr.qcol, expr.qval); err != nil {
 		return err
 	}
