@@ -315,6 +315,30 @@ func (model *Model) GetStringAttr(attrname string) (string, error) {
 	return C.GoString(attr), nil
 }
 
+// GetDoubleAttrVars ...
+func (model *Model) GetDoubleAttrVars(attrname string, vars []*Var) ([]float64, error) {
+	ind := make([]int32, len(vars))
+	for i, v := range vars {
+		if v.idx < 0 {
+			return []float64{}, errors.New("")
+		}
+		ind[i] = v.idx
+	}
+	return model.getDoubleAttrList(attrname, ind)
+}
+
+// SetDoubleAttrVars ...
+func (model *Model) SetDoubleAttrVars(attrname string, vars []*Var, value []float64) error {
+	ind := make([]int32, len(vars))
+	for i, v := range vars {
+		if v.idx < 0 {
+			return errors.New("")
+		}
+		ind[i] = v.idx
+	}
+	return model.setDoubleAttrList(attrname, ind, value)
+}
+
 func (model *Model) getIntAttrElement(attr string, ind int32) (int32, error) {
 	if model == nil {
 		return 0.0, errors.New("")
@@ -407,15 +431,34 @@ func (model *Model) setStringAttrElement(attr string, ind int32, value string) e
 	return nil
 }
 
-// GetDoubleAttrArray ...
-func (model *Model) GetDoubleAttrArray(attrname string, numvars int) ([]float64, error) {
+func (model *Model) getDoubleAttrList(attrname string, ind []int32) ([]float64, error) {
 	if model == nil {
 		return []float64{}, errors.New("")
 	}
-	value := make([]float64, numvars)
-	err := C.GRBgetdblattrarray(model.model, C.CString(attrname), 0, C.int(numvars), (*C.double)(&value[0]))
+	if len(ind) == 0 {
+		return []float64{}, nil
+	}
+	value := make([]float64, len(ind))
+	err := C.GRBgetdblattrlist(model.model, C.CString(attrname), C.int(len(ind)), (*C.int)(&ind[0]), (*C.double)(&value[0]))
 	if err != 0 {
 		return []float64{}, model.makeError(err)
 	}
 	return value, nil
+}
+
+func (model *Model) setDoubleAttrList(attrname string, ind []int32, value []float64) error {
+	if model == nil {
+		return errors.New("")
+	}
+	if len(ind) != len(value) {
+		return errors.New("")
+	}
+	if len(ind) == 0 {
+		return nil
+	}
+	err := C.GRBsetdblattrlist(model.model, C.CString(attrname), C.int(len(ind)), (*C.int)(&ind[0]), (*C.double)(&value[0]))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
 }

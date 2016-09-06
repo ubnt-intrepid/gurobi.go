@@ -43,7 +43,7 @@ func main() {
 	}
 
 	// Linear objective term
-	if err := x.SetDouble(gurobi.DBL_ATTR_OBJ, 2.0); err != nil {
+	if err := model.SetDoubleAttrVars(gurobi.DBL_ATTR_OBJ, []*gurobi.Var{x}, []float64{2}); err != nil {
 		panic(err.Error())
 	}
 
@@ -78,7 +78,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	sol, err := model.GetDoubleAttrArray(gurobi.DBL_ATTR_X, 3)
+	sol, err := model.GetDoubleAttrVars(gurobi.DBL_ATTR_X, []*gurobi.Var{x, y, z})
 	if err != nil {
 		panic(err.Error())
 	}
