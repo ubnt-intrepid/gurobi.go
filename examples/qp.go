@@ -37,13 +37,10 @@ func main() {
 		panic(err.Error())
 	}
 
-	// Quadratic objective terms
-	if err := model.AddQPTerms([]*gurobi.Var{x, y, y, z, z}, []*gurobi.Var{x, x, y, y, z}, []float64{1, 1, 1, 1, 1}); err != nil {
-		panic(err.Error())
-	}
-
-	// Linear objective term
-	if err := model.SetDoubleAttrVars(gurobi.DBL_ATTR_OBJ, []*gurobi.Var{x}, []float64{2}); err != nil {
+	// Set Objective function
+	expr := gurobi.QuadExpr{}
+	expr.AddTerm(x, 2).AddQTerm(x, x, 1).AddQTerm(x, y, 1).AddQTerm(y, y, 1).AddQTerm(y, z, 1).AddQTerm(z, z, 1)
+	if err := model.SetObjective(&expr, gurobi.MINIMIZE); err != nil {
 		panic(err.Error())
 	}
 

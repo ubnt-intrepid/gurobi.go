@@ -199,8 +199,24 @@ func (model *Model) AddConstr(vars []*Var, val []float64, sense int8, rhs float6
 	return &model.constrs[len(model.constrs)-1], nil
 }
 
-// AddQPTerms ...
-func (model *Model) AddQPTerms(qrow []*Var, qcol []*Var, qval []float64) error {
+// SetObjective ...
+func (model *Model) SetObjective(expr *QuadExpr, sense int32) error {
+	if err := model.addQPTerms(expr.qrow, expr.qcol, expr.qval); err != nil {
+		return err
+	}
+	if err := model.SetDoubleAttrVars(C.GRB_DBL_ATTR_OBJ, expr.lind, expr.lval); err != nil {
+		return err
+	}
+	if err := model.SetDoubleAttr(C.GRB_DBL_ATTR_OBJCON, expr.offset); err != nil {
+		return err
+	}
+	if err := model.SetIntAttr(C.GRB_INT_ATTR_MODELSENSE, sense); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (model *Model) addQPTerms(qrow []*Var, qcol []*Var, qval []float64) error {
 	if model == nil {
 		return errors.New("")
 	}
@@ -313,6 +329,42 @@ func (model *Model) GetStringAttr(attrname string) (string, error) {
 		return "", model.makeError(err)
 	}
 	return C.GoString(attr), nil
+}
+
+// SetIntAttr ...
+func (model *Model) SetIntAttr(attrname string, value int32) error {
+	if model == nil {
+		return errors.New("")
+	}
+	err := C.GRBsetintattr(model.model, C.CString(attrname), C.int(value))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
+}
+
+// SetDoubleAttr ...
+func (model *Model) SetDoubleAttr(attrname string, value float64) error {
+	if model == nil {
+		return errors.New("")
+	}
+	err := C.GRBsetdblattr(model.model, C.CString(attrname), C.double(value))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
+}
+
+// SetStringAttr ...
+func (model *Model) SetStringAttr(attrname string, value string) error {
+	if model == nil {
+		return errors.New("")
+	}
+	err := C.GRBsetstrattr(model.model, C.CString(attrname), C.CString(value))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
 }
 
 // GetDoubleAttrVars ...
