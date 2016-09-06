@@ -69,7 +69,7 @@ func (model *Model) AddVar(vtype int8, obj float64, lb float64, ub float64, name
 		pval = (*C.double)(&columns[0])
 	}
 
-	err := C.GRBaddvar(model.model, (C.int)(len(constrs)), pind, pval, (C.double)(obj), (C.double)(lb), (C.double)(ub), (C.char)(vtype), C.CString(name))
+	err := C.GRBaddvar(model.model, C.int(len(constrs)), pind, pval, C.double(obj), C.double(lb), C.double(ub), C.char(vtype), C.CString(name))
 	if err != 0 {
 		return nil, model.makeError(err)
 	}
@@ -146,7 +146,7 @@ func (model *Model) AddVars(vtype []int8, obj []float64, lb []float64, ub []floa
 		pname = (**C.char)(&vname[0])
 	}
 
-	err := C.GRBaddvars(model.model, (C.int)(len(vtype)), (C.int)(numnz), pbeg, pind, pval, pobj, plb, pub, pvtype, pname)
+	err := C.GRBaddvars(model.model, C.int(len(vtype)), C.int(numnz), pbeg, pind, pval, pobj, plb, pub, pvtype, pname)
 	if err != 0 {
 		return nil, model.makeError(err)
 	}
@@ -186,7 +186,7 @@ func (model *Model) AddConstr(vars []*Var, val []float64, sense int8, rhs float6
 		pval = (*C.double)(&val[0])
 	}
 
-	err := C.GRBaddconstr(model.model, (C.int)(len(ind)), pind, pval, (C.char)(sense), (C.double)(rhs), C.CString(constrname))
+	err := C.GRBaddconstr(model.model, C.int(len(ind)), pind, pval, C.char(sense), C.double(rhs), C.CString(constrname))
 	if err != 0 {
 		return nil, model.makeError(err)
 	}
@@ -232,7 +232,7 @@ func (model *Model) AddQPTerms(qrow []*Var, qcol []*Var, qval []float64) error {
 		pqval = (*C.double)(&qval[0])
 	}
 
-	err := C.GRBaddqpterms(model.model, (C.int)(len(qrow)), pqrow, pqcol, pqval)
+	err := C.GRBaddqpterms(model.model, C.int(len(qrow)), pqrow, pqcol, pqval)
 	if err != 0 {
 		return model.makeError(err)
 	}
@@ -245,12 +245,10 @@ func (model *Model) Update() error {
 	if model == nil {
 		return errors.New("")
 	}
-
 	err := C.GRBupdatemodel(model.model)
 	if err != 0 {
 		return model.makeError(err)
 	}
-
 	return nil
 }
 
@@ -259,12 +257,10 @@ func (model *Model) Optimize() error {
 	if model == nil {
 		return errors.New("")
 	}
-
 	err := C.GRBoptimize(model.model)
 	if err != 0 {
 		return model.makeError(err)
 	}
-
 	return nil
 }
 
@@ -273,45 +269,142 @@ func (model *Model) Write(filename string) error {
 	if model == nil {
 		return errors.New("")
 	}
-
 	err := C.GRBwrite(model.model, C.CString(filename))
 	if err != 0 {
 		return model.makeError(err)
 	}
-
 	return nil
 }
 
 // GetIntAttr ...
-// get an attribute from model
 func (model *Model) GetIntAttr(attrname string) (int32, error) {
 	if model == nil {
 		return 0, errors.New("")
 	}
-
 	var attr int32
 	err := C.GRBgetintattr(model.model, C.CString(attrname), (*C.int)(&attr))
 	if err != 0 {
 		return 0, model.makeError(err)
 	}
-
 	return attr, nil
 }
 
 // GetDoubleAttr ...
-// get an attribute from model
 func (model *Model) GetDoubleAttr(attrname string) (float64, error) {
 	if model == nil {
 		return 0, errors.New("")
 	}
-
 	var attr float64
 	err := C.GRBgetdblattr(model.model, C.CString(attrname), (*C.double)(&attr))
 	if err != 0 {
 		return 0, model.makeError(err)
 	}
-
 	return attr, nil
+}
+
+// GetStringAttr ...
+func (model *Model) GetStringAttr(attrname string) (string, error) {
+	if model == nil {
+		return "", errors.New("")
+	}
+	var attr *C.char
+	err := C.GRBgetstrattr(model.model, C.CString(attrname), (**C.char)(&attr))
+	if err != 0 {
+		return "", model.makeError(err)
+	}
+	return C.GoString(attr), nil
+}
+
+func (model *Model) getIntAttrElement(attr string, ind int32) (int32, error) {
+	if model == nil {
+		return 0.0, errors.New("")
+	}
+	var value int32
+	err := C.GRBgetintattrelement(model.model, C.CString(attr), C.int(ind), (*C.int)(&value))
+	if err != 0 {
+		return 0, model.makeError(err)
+	}
+	return value, nil
+}
+
+func (model *Model) getCharAttrElement(attr string, ind int32) (int8, error) {
+	if model == nil {
+		return 0, errors.New("")
+	}
+	var value int8
+	err := C.GRBgetcharattrelement(model.model, C.CString(attr), C.int(ind), (*C.char)(&value))
+	if err != 0 {
+		return 0, model.makeError(err)
+	}
+	return value, nil
+}
+
+func (model *Model) getDoubleAttrElement(attr string, ind int32) (float64, error) {
+	if model == nil {
+		return 0, errors.New("")
+	}
+	var value float64
+	err := C.GRBgetdblattrelement(model.model, C.CString(attr), C.int(ind), (*C.double)(&value))
+	if err != 0 {
+		return 0, model.makeError(err)
+	}
+	return value, nil
+}
+
+func (model *Model) getStringAttrElement(attr string, ind int32) (string, error) {
+	if model == nil {
+		return "", errors.New("")
+	}
+	var value *C.char
+	err := C.GRBgetstrattrelement(model.model, C.CString(attr), C.int(ind), (**C.char)(&value))
+	if err != 0 {
+		return "", model.makeError(err)
+	}
+	return C.GoString(value), nil
+}
+
+func (model *Model) setIntAttrElement(attr string, ind int32, value int32) error {
+	if model == nil {
+		return errors.New("")
+	}
+	err := C.GRBsetintattrelement(model.model, C.CString(attr), C.int(ind), C.int(value))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
+}
+
+func (model *Model) setCharAttrElement(attr string, ind int32, value int8) error {
+	if model == nil {
+		return errors.New("")
+	}
+	err := C.GRBsetcharattrelement(model.model, C.CString(attr), C.int(ind), C.char(value))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
+}
+
+func (model *Model) setDoubleAttrElement(attr string, ind int32, value float64) error {
+	if model == nil {
+		return errors.New("")
+	}
+	err := C.GRBsetdblattrelement(model.model, C.CString(attr), C.int(ind), C.double(value))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
+}
+
+func (model *Model) setStringAttrElement(attr string, ind int32, value string) error {
+	if model == nil {
+		return errors.New("")
+	}
+	err := C.GRBsetstrattrelement(model.model, C.CString(attr), C.int(ind), C.CString(value))
+	if err != 0 {
+		return model.makeError(err)
+	}
+	return nil
 }
 
 // GetDoubleAttrArray ...
@@ -319,39 +412,10 @@ func (model *Model) GetDoubleAttrArray(attrname string, numvars int) ([]float64,
 	if model == nil {
 		return []float64{}, errors.New("")
 	}
-
 	value := make([]float64, numvars)
-	err := C.GRBgetdblattrarray(model.model, C.CString(attrname), 0, (C.int)(numvars), (*C.double)(&value[0]))
+	err := C.GRBgetdblattrarray(model.model, C.CString(attrname), 0, C.int(numvars), (*C.double)(&value[0]))
 	if err != 0 {
 		return []float64{}, model.makeError(err)
 	}
-
 	return value, nil
-}
-
-func (model *Model) getDoubleAttrElement(attr string, ind int32) (float64, error) {
-	if model == nil {
-		return 0.0, errors.New("")
-	}
-
-	value := (C.double)(0)
-	err := C.GRBgetdblattrelement(model.model, C.CString(attr), (C.int)(ind), (*C.double)(&value))
-	if err != 0 {
-		return 0.0, model.makeError(err)
-	}
-
-	return float64(value), nil
-}
-
-func (model *Model) setDoubleAttrElement(attr string, ind int32, value float64) error {
-	if model == nil {
-		return errors.New("")
-	}
-
-	err := C.GRBsetdblattrelement(model.model, C.CString(attr), (C.int)(ind), (C.double)(value))
-	if err != 0 {
-		return model.makeError(err)
-	}
-
-	return nil
 }
