@@ -23,11 +23,11 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "y", []*gurobi.Constr{}, []float64{})
+	y, err := model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "y", []*gurobi.Constr{}, []float64{})
 	if err != nil {
 		panic(err.Error())
 	}
-	_, err = model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "z", []*gurobi.Constr{}, []float64{})
+	z, err := model.AddVar(gurobi.CONTINUOUS, 0.0, 0.0, gurobi.INFINITY, "z", []*gurobi.Constr{}, []float64{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// Quadratic objective terms
-	if err := model.AddQPTerms([]int32{0, 1, 1, 2, 2}, []int32{0, 0, 1, 1, 2}, []float64{1, 1, 1, 1, 1}); err != nil {
+	if err := model.AddQPTerms([]*gurobi.Var{x, y, y, z, z}, []*gurobi.Var{x, x, y, y, z}, []float64{1, 1, 1, 1, 1}); err != nil {
 		panic(err.Error())
 	}
 
@@ -48,12 +48,12 @@ func main() {
 	}
 
 	// First constraint
-	if err := model.AddConstr([]int32{0, 1, 2}, []float64{1, 2, 3}, '>', 4.0, "c0"); err != nil {
+	if _, err = model.AddConstr([]*gurobi.Var{x, y, z}, []float64{1, 2, 3}, '>', 4.0, "c0"); err != nil {
 		panic(err.Error())
 	}
 
 	// Second constraint
-	if err := model.AddConstr([]int32{0, 1, 2}, []float64{1, 1, 1}, '>', 1.0, "c1"); err != nil {
+	if _, err = model.AddConstr([]*gurobi.Var{x, y, z}, []float64{1, 1, 1}, '>', 1.0, "c1"); err != nil {
 		panic(err.Error())
 	}
 
