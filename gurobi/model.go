@@ -43,8 +43,18 @@ func (model *Model) Free() {
 	C.GRBfreemodel(model.model)
 }
 
-// AddVar ...
-// create a variable to the model
+/*
+AddVar
+Description:
+	Create a variable to the model
+	This includes inputs for:
+	- obj = Linear coefficient applied to this variable in the objective function (i.e. objective =  ... + obj * newvar + ...)
+	- lb = Lower Bound
+	- ub = Upper Bound
+	- name = Name of the variable
+Links:
+
+*/
 func (model *Model) AddVar(vtype int8, obj float64, lb float64, ub float64, name string, constrs []*Constr, columns []float64) (*Var, error) {
 	if model == nil {
 		return nil, errors.New("model is not initialized")
@@ -164,8 +174,13 @@ func (model *Model) AddVars(vtype []int8, obj []float64, lb []float64, ub []floa
 	return vars, nil
 }
 
-// AddConstr ...
-// add a constraint into the model.
+/*
+AddConstr
+Description:
+	Add a Linear constraint into the model.
+Link:
+	https://www.gurobi.com/documentation/9.1/refman/c_addconstr.html
+*/
 func (model *Model) AddConstr(vars []*Var, val []float64, sense int8, rhs float64, constrname string) (*Constr, error) {
 	if model == nil {
 		return nil, errors.New("")
@@ -277,13 +292,75 @@ func (model *Model) AddConstrs(vars [][]*Var, val [][]float64, sense []int8, rhs
 }
 
 // SetObjective ...
-func (model *Model) SetObjective(expr *QuadExpr, sense int32) error {
+func (model *Model) SetObjective(objectiveExpr interface{}, sense int32) error {
+
+	// Clear Out All Previous Quadratic Objective Terms
 	if err := C.GRBdelq(model.model); err != 0 {
 		return model.makeError(err)
 	}
+
+	// Detect the Type of Objective We Have
+	switch objectiveExpr.(type) {
+	case *LinExpr:
+		le := objectiveExpr.(*LinExpr)
+		if err := model.SetLinearObjective(le, sense); err != nil {
+			return err
+		}
+	case *QuadExpr:
+		qe := objectiveExpr.(*QuadExpr)
+		if err := model.SetQuadraticObjective(qe, sense); err != nil {
+			return err
+		}
+	default:
+		return errors.New("Unexpected objective expression type!")
+	}
+
+	return nil
+}
+
+/*
+SetLinearObjective
+Description:
+	Adds a linear objective to the model.
+*/
+func (model *Model) SetLinearObjective(expr *LinExpr, sense int32) error {
+	// Constants
+
+	// Algorithm
+	for tempIndex, tempVar := range expr.ind {
+		// Add Each to the objective, by modifying the obj attribute
+		if err := tempVar.SetObj(expr.val[tempIndex]); err != nil {
+			return err
+		}
+	}
+
+	// if err := model.SetDoubleAttrVars(C.GRB_DBL_ATTR_OBJ, expr.lind, expr.lval); err != nil {
+	// 	return err
+	// }
+	if err := model.SetDoubleAttr(C.GRB_DBL_ATTR_OBJCON, expr.offset); err != nil {
+		return err
+	}
+	if err := model.SetIntAttr(C.GRB_INT_ATTR_MODELSENSE, sense); err != nil {
+		return err
+	}
+
+	// If you successfully complete all steps, then return no errors.
+	return nil
+}
+
+/*
+SetQuadraticObjective
+Description:
+	Adds a quadratic objective to the model.
+*/
+func (model *Model) SetQuadraticObjective(expr *QuadExpr, sense int32) error {
+	// Constants
+
+	// Algorithm
 	if err := model.addQPTerms(expr.qrow, expr.qcol, expr.qval); err != nil {
 		return err
 	}
+
 	if err := model.SetDoubleAttrVars(C.GRB_DBL_ATTR_OBJ, expr.lind, expr.lval); err != nil {
 		return err
 	}
@@ -293,6 +370,8 @@ func (model *Model) SetObjective(expr *QuadExpr, sense int32) error {
 	if err := model.SetIntAttr(C.GRB_INT_ATTR_MODELSENSE, sense); err != nil {
 		return err
 	}
+
+	// If you successfully complete all steps, then return no errors.
 	return nil
 }
 

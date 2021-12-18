@@ -37,3 +37,7 @@ func (v *Var) SetDouble(attr string, value float64) error {
 func (v *Var) SetString(attr string, value string) error {
 	return v.model.setStringAttrElement(attr, v.idx, value)
 }
+
+func (v *Var) SetObj(value float64) error {
+	return v.model.setDoubleAttrElement( "Obj",v.idx,value )
+}
