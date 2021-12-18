@@ -1,6 +1,6 @@
 package gurobi
 
-// #include <gurobi_c.h>
+// #include <gurobi_passthrough.h>
 import "C"
 import "errors"
 

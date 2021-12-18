@@ -1,6 +1,6 @@
 package gurobi
 
-// #include <gurobi_c.h>
+// #include <gurobi_passthrough.h>
 import "C"
 import "errors"
 
@@ -204,7 +204,7 @@ func (model *Model) AddConstrs(vars [][]*Var, val [][]float64, sense []int8, rhs
 		return nil, errors.New("")
 	}
 
-	if len(vars) != len(val)  || len(val) != len(sense) || len(sense) != len(rhs) || len(rhs) != len(constrname) {
+	if len(vars) != len(val) || len(val) != len(sense) || len(sense) != len(rhs) || len(rhs) != len(constrname) {
 		return nil, errors.New("")
 	}
 
@@ -275,7 +275,6 @@ func (model *Model) AddConstrs(vars [][]*Var, val [][]float64, sense []int8, rhs
 	}
 	return constrs, nil
 }
-
 
 // SetObjective ...
 func (model *Model) SetObjective(expr *QuadExpr, sense int32) error {
