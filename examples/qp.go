@@ -1,7 +1,10 @@
 package main
 
-import "../gurobi"
-import "fmt"
+import (
+	"fmt"
+
+	gurobi "../gurobi"
+)
 
 func main() {
 	// Create environment.
