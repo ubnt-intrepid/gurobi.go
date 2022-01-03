@@ -6,9 +6,14 @@ Unofficial Gurobi Interfaces for Golang.
 
 ## Installation
 
-1. Install the go library using ` go get github.com/kwesiRutledge/gurobi.go `
-2. Enter the GOROOT where gurobi.go is installed `cd ~/go/src/github.com/kwesiRutledge/gurobi.go`.
-3. Run the setup script: `go run utils/setup.go`.
+### Normal Installation
+
+(In Progress)
+
+### Development Installation
+
+1. Clone the library using `git clone github.com/kwesiRutledge/gurobi.go `
+2. Run the setup script from inside the cloned repository: `go generate`.
 
 Warning: The setup script is designed to only work on Mac OS X.
 
