@@ -5,5 +5,5 @@
 .vscode/
 
 # Ignore the cgo helper files and gurobi passthrough files
-*cgoHelper.go
+***cgoHelper.go
 *gurobi_passthrough.h
