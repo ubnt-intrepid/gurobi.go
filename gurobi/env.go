@@ -140,7 +140,7 @@ func (env *Env) GetDBLParam(paramName string) (float64, error) {
 
 func IsValidDBLParam(paramName string) bool {
 	// All param names
-	var scalarDoubleAttributes []string = []string{"TimeLimit", "Cutoff"}
+	var scalarDoubleAttributes []string = []string{"TimeLimit", "Cutoff", "BestObjStop"}
 
 	// Check that attribute is actually a scalar double attribute.
 	paramNameIsValid := false
