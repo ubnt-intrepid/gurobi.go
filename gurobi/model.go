@@ -7,10 +7,10 @@ import "errors"
 // Model ...
 // Gurobi model object
 type Model struct {
-	model   *C.GRBmodel
-	env     Env
-	vars    []Var
-	constrs []Constr
+	Model   *C.GRBmodel
+	Env     Env
+	Vars    []Var
+	Constrs []Constr
 }
 
 // NewModel ...
@@ -673,3 +673,9 @@ func (model *Model) setDoubleAttrList(attrname string, ind []int32, value []floa
 	}
 	return nil
 }
+
+/*
+GetVarByName
+Description:
+	Collects the GRBVar which has the given gurobi variable by name.
+*/

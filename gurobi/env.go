@@ -102,7 +102,7 @@ func (env *Env) SetDBLParam(paramName string, val float64) error {
 	// Set Attribute
 	errcode := int(C.GRBsetdblparam(env.env, C.CString(paramName), C.double(val)))
 	if errcode != 0 {
-		return fmt.Errorf("There was an error running GRBsetdblparam(): Error code %v", errcode)
+		return fmt.Errorf("There was an error running GRBsetdblparam(): %v", env.makeError(_Ctype_int(errcode)))
 	}
 
 	// If everything was successful, then return nil.
@@ -131,7 +131,7 @@ func (env *Env) GetDBLParam(paramName string) (float64, error) {
 	var valOut C.double
 	errcode := int(C.GRBgetdblparam(env.env, C.CString(paramName), &valOut))
 	if errcode != 0 {
-		return -1, fmt.Errorf("There was an error running GRBgetdblparam(): Error code %v", errcode)
+		return -1, fmt.Errorf("There was an error running GRBgetdblparam(): %v", env.makeError(_Ctype_int(errcode)))
 	}
 
 	// If everything was successful, then return nil.
