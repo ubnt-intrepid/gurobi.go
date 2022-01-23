@@ -27,5 +27,5 @@ func (env *Env) makeError(errcode C.int) error {
 }
 
 func (model *Model) makeError(errcode C.int) error {
-	return model.env.makeError(errcode)
+	return model.Env.makeError(errcode)
 }
