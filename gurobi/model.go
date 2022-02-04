@@ -180,6 +180,13 @@ func (model *Model) AddVars(vtype []int8, obj []float64, lb []float64, ub []floa
 AddConstr
 Description:
 	Add a Linear constraint into the model.
+	Uses the GRBaddconstr() method from the C api.
+Inputs:
+	- vars: A slice of variable arrays which provide the indices for the gurobi model's variables.
+	- val: A slice of float values which are used as coefficients for the variables in the linear constraint.
+	- sense: A flag which determines if this is an equality, less than equal or greater than or equal constraint.
+	- rhs: A float value which determines the constant which is on the other side of the constraint.
+	- constrname: An optional name for the constraint.
 Link:
 	https://www.gurobi.com/documentation/9.1/refman/c_addconstr.html
 */
@@ -190,10 +197,10 @@ func (model *Model) AddConstr(vars []*Var, val []float64, sense int8, rhs float6
 
 	ind := make([]int32, len(vars))
 	for i, v := range vars {
-		if v.idx < 0 {
+		if v.Index < 0 {
 			return nil, errors.New("Invalid vars")
 		}
-		ind[i] = v.idx
+		ind[i] = v.Index
 	}
 
 	pind := (*C.int)(nil)
@@ -240,7 +247,7 @@ func (model *Model) AddConstrs(vars [][]*Var, val [][]float64, sense []int8, rhs
 		}
 
 		for j := 0; j < len(vars[i]); j++ {
-			idx := vars[i][j].idx
+			idx := vars[i][j].Index
 			if idx < 0 {
 				return nil, errors.New("")
 			}
@@ -389,15 +396,15 @@ func (model *Model) addQPTerms(qrow []*Var, qcol []*Var, qval []float64) error {
 	_qrow := make([]int32, len(qrow))
 	_qcol := make([]int32, len(qcol))
 	for i := 0; i < len(qrow); i++ {
-		if qrow[i].idx < 0 {
+		if qrow[i].Index < 0 {
 			return errors.New("")
 		}
-		if qcol[i].idx < 0 {
+		if qcol[i].Index < 0 {
 			return errors.New("")
 		}
 
-		_qrow[i] = qrow[i].idx
-		_qcol[i] = qcol[i].idx
+		_qrow[i] = qrow[i].Index
+		_qcol[i] = qcol[i].Index
 	}
 
 	pqrow := (*C.int)(nil)
@@ -532,10 +539,10 @@ func (model *Model) SetStringAttr(attrname string, value string) error {
 func (model *Model) GetDoubleAttrVars(attrname string, vars []*Var) ([]float64, error) {
 	ind := make([]int32, len(vars))
 	for i, v := range vars {
-		if v.idx < 0 {
+		if v.Index < 0 {
 			return []float64{}, errors.New("")
 		}
-		ind[i] = v.idx
+		ind[i] = v.Index
 	}
 	return model.getDoubleAttrList(attrname, ind)
 }
@@ -544,10 +551,10 @@ func (model *Model) GetDoubleAttrVars(attrname string, vars []*Var) ([]float64, 
 func (model *Model) SetDoubleAttrVars(attrname string, vars []*Var, value []float64) error {
 	ind := make([]int32, len(vars))
 	for i, v := range vars {
-		if v.idx < 0 {
+		if v.Index < 0 {
 			return errors.New("")
 		}
-		ind[i] = v.idx
+		ind[i] = v.Index
 	}
 	return model.setDoubleAttrList(attrname, ind, value)
 }
