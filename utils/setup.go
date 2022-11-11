@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -37,10 +38,47 @@ type GurobiVersionInfo struct {
 	TertiaryVersion int
 }
 
+/*
+CreateGurobiHomeDirectory
+Description:
+
+	Creates the Gurobi Home directory where your gurobi program and helper files should be installed when you run
+	the Gurobi Installer.
+*/
+func CreateGurobiHomeDirectory(versionInfo GurobiVersionInfo) (string, error) {
+	// Create Base Home Directory
+	gurobiHome := fmt.Sprintf("/Library/gurobi%v%v%v", versionInfo.MajorVersion, versionInfo.MinorVersion, versionInfo.TertiaryVersion)
+
+	// Create
+	switch runtime.GOOS {
+	case "darwin":
+		// Decide on if we are on intel processors or apple silicon.
+		switch runtime.GOARCH {
+		case "amd64":
+			gurobiHome := fmt.Sprintf("%v/mac64", gurobiHome)
+			return gurobiHome, nil
+		case "arm64":
+			gurobiHome := fmt.Sprintf("%v/macos_universal2", gurobiHome)
+			return gurobiHome, nil
+		default:
+			return "", fmt.Errorf("There was an error finding the architecture on your mac! What is \"%v\"? Send an issue to the gurobi.go repository.", runtime.GOARCH)
+		}
+	default:
+		return "", fmt.Errorf("The operating system that you are using is not recognized: \"%v\".", runtime.GOOS)
+	}
+
+}
+
 func GetDefaultSetupFlags() (SetupFlags, error) {
 	// Create Default Struct
+	defaultGurobiVersion := GurobiVersionInfo{9, 0, 3}
+	defaultHome, err := CreateGurobiHomeDirectory(defaultGurobiVersion)
+	if err != nil {
+		return SetupFlags{}, err
+	}
+
 	mlf := SetupFlags{
-		GurobiHome:     "/Library/gurobi903/mac64",
+		GurobiHome:     defaultHome,
 		GoFilename:     GoLibraryFilename,
 		HeaderFilename: CppHeaderFilename,
 		PackageName:    "gurobi",
@@ -71,7 +109,10 @@ func GetDefaultSetupFlags() (SetupFlags, error) {
 	}
 
 	// Write the highest version's directory into the GurobiHome variable
-	mlf.GurobiHome = fmt.Sprintf("/Library/gurobi%v%v%v/mac64", highestVersion.MajorVersion, highestVersion.MinorVersion, highestVersion.TertiaryVersion)
+	mlf.GurobiHome, err = CreateGurobiHomeDirectory(highestVersion)
+	if err != nil {
+		return mlf, err
+	}
 
 	return mlf, nil
 
@@ -80,6 +121,7 @@ func GetDefaultSetupFlags() (SetupFlags, error) {
 /*
 StringToGurobiVersionInfo
 Assumptions:
+
 	Assumes that a valid gurobi name is given.
 */
 func StringToGurobiVersionInfo(gurobiDirectoryName string) (GurobiVersionInfo, error) {
@@ -115,9 +157,12 @@ func StringToGurobiVersionInfo(gurobiDirectoryName string) (GurobiVersionInfo, e
 /*
 StringsToGurobiVersionInfoList
 Description:
+
 	Receives a set of strings which should be in the format of valid gurobi installation directories
 	and returns a list of GurobiVersionInfo objects.
+
 Assumptions:
+
 	Assumes that a valid gurobi name is given.
 */
 func StringsToGurobiVersionInfoList(gurobiDirectoryNames []string) ([]GurobiVersionInfo, error) {
@@ -211,6 +256,7 @@ func ParseMakeLibArguments(sfIn SetupFlags) (SetupFlags, error) {
 /*
 CreateCXXFlagsDirective
 Description:
+
 	Creates the CXX Flags directive in the  file that we will use in lib.go.
 */
 func CreateCXXFlagsDirective(sf SetupFlags) (string, error) {
@@ -225,6 +271,7 @@ func CreateCXXFlagsDirective(sf SetupFlags) (string, error) {
 /*
 CreatePackageLine
 Description:
+
 	Creates the "package" directive in the  file that we will use in lib.go.
 */
 func CreatePackageLine(sf SetupFlags) (string, error) {
@@ -235,6 +282,7 @@ func CreatePackageLine(sf SetupFlags) (string, error) {
 /*
 CreateLDFlagsDirective
 Description:
+
 	Creates the LD_FLAGS directive in the file that we will use in lib.go.
 */
 func CreateLDFlagsDirective(sf SetupFlags) (string, error) {
@@ -296,6 +344,7 @@ func GetAHeaderFilenameFrom(dirName string) (string, error) {
 /*
 WriteLibGo
 Description:
+
 	Creates the library file which imports the proper libraries for cgo.
 	By default this is named according to GoLibraryFilename.
 */
@@ -343,15 +392,12 @@ func WriteLibGo(sf SetupFlags) error {
 /*
 WriteHeaderFile
 Description:
+
 	This script writes the C++ header file which goes in gurobi.go but references
 	the true gurobi_c.h file.
 */
 func WriteHeaderFile(sf SetupFlags) error {
 	// Constants
-	gvi, err := sf.ToGurobiVersionInfo()
-	if err != nil {
-		return err
-	}
 
 	// Algorithm
 
@@ -364,7 +410,7 @@ func WriteHeaderFile(sf SetupFlags) error {
 
 	// Write a small comment + import
 	simpleComment := fmt.Sprintf("// This header file was created by setup.go \n// It simply connects gurobi.go to the local distribution (along with the cgo directives in %v\n\n", GoLibraryFilename)
-	simpleImport := fmt.Sprintf("#include </Library/gurobi%v%v%v/mac64/include/gurobi_c.h>\n", gvi.MajorVersion, gvi.MinorVersion, gvi.TertiaryVersion)
+	simpleImport := fmt.Sprintf("#include <%v/include/gurobi_c.h>\n", sf.GurobiHome)
 
 	// Write all directives to file
 	_, err = f.WriteString(fmt.Sprintf("%v%v", simpleComment, simpleImport))
