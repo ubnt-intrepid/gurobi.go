@@ -3,3 +3,7 @@
 *.log
 *.lp
 .vscode/
+
+# Ignore the cgo helper files and gurobi passthrough files
+***cgoHelper.go
+*gurobi_passthrough.h

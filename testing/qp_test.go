@@ -1,12 +1,13 @@
-package main
+package testing
 
 import (
 	"fmt"
+	"testing"
 
-	gurobi "../gurobi"
+	gurobi "github.com/kwesiRutledge/gurobi.go/gurobi"
 )
 
-func main() {
+func TestQP1(t *testing.T) {
 	// Create environment.
 	env, err := gurobi.NewEnv("qp.log")
 	if err != nil {
