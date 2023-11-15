@@ -1,3 +1,5 @@
+# NOTE: This repository has now been replaced by the organization [MatProGo](https://github.com/MatProGo-dev)'s project: [Gurobi.go](https://github.com/MatProGo-dev/Gurobi.go/tree/main)
+
 # Gurobi Interfaces for Golang
 
 Unofficial Gurobi Interfaces for Golang.
